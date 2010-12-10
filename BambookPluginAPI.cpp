@@ -11,6 +11,8 @@
 #include "BambookPluginAPI.h"
 #include "BambookCore.h"
 
+BambookPluginAPI *BambookPluginAPI::instance = NULL;
+
 ///////////////////////////////////////////////////////////////////////////////
 /// @fn BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host)
 ///
@@ -23,25 +25,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host) : m_plugin(plugin), m_host(host)
 {
-    registerMethod("echo",       make_method(this, &BambookPluginAPI::echo));
-    registerMethod("testEvent",  make_method(this, &BambookPluginAPI::testEvent));
-    registerMethod("sdkVersion", make_method(this, &BambookPluginAPI::sdkVersion));
-    registerMethod("connect",    make_method(this, &BambookPluginAPI::connect));
-    registerMethod("getPrivBookInfos",    make_method(this, &BambookPluginAPI::getPrivBookInfos));
-
-    // Read-write property
-    registerProperty("testString",
-                     make_property(this,
-                        &BambookPluginAPI::get_testString,
-                        &BambookPluginAPI::set_testString));
-
-    // Read-only property
-    registerProperty("version",
-                     make_property(this,
-                        &BambookPluginAPI::get_version));
+    registerMethod("sdkVersion",            make_method(this, &BambookPluginAPI::sdkVersion));
+    registerMethod("connect",               make_method(this, &BambookPluginAPI::connect));
+    registerMethod("getPrivBookInfos",      make_method(this, &BambookPluginAPI::getPrivBookInfos));
+    registerMethod("getDeviceInfo",         make_method(this, &BambookPluginAPI::getDeviceInfo));
+    registerMethod("sendSnbToBambook",         make_method(this, &BambookPluginAPI::sendSnbToBambook));    
     
-    
-    registerEvent("onfired");    
+    registerEvent("onSendSnbToBambook");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,29 +63,6 @@ BambookPluginPtr BambookPluginAPI::getPlugin()
 }
 
 
-
-// Read/Write property testString
-std::string BambookPluginAPI::get_testString()
-{
-    return m_testString;
-}
-void BambookPluginAPI::set_testString(const std::string& val)
-{
-    m_testString = val;
-}
-
-// Read-only property version
-std::string BambookPluginAPI::get_version()
-{
-    return "CURRENT_VERSION";
-}
-
-// Method echo
-FB::variant BambookPluginAPI::echo(const FB::variant& msg)
-{
-    return msg;
-}
-
 FB::variant BambookPluginAPI::sdkVersion()
 {
     uint32_t version;
@@ -107,38 +74,61 @@ FB::variant BambookPluginAPI::sdkVersion()
 
 FB::variant BambookPluginAPI::connect(std::string ip)
 {
+    instance = this;
     return BambookConnect(ip.c_str(), 1000 * 30, &handle);
 }
 
-FB::variant BambookPluginAPI::getPrivBookInfos()
+FB::VariantList BambookPluginAPI::getPrivBookInfos()
 {
+    FB::VariantList books;
     PrivBookInfo info;
     info.cbSize = sizeof(PrivBookInfo);
     if(BambookGetFirstPrivBookInfo(handle, &info) == BR_SUCC){
-	std::string bookName = info.bookName;
-        return bookName;
-/*
-        temp.append(QTime::currentTime().toString()).append(":").append("\n");
-        temp.append("Book Name:").append(QString::fromUtf8(info.bookName)).append("\n");
-        temp.append("Author:").append(QString::fromUtf8(info.bookAuthor)).append("\n");
-        temp.append("Book Guid:").append(QString::fromUtf8(info.bookGuid)).append("\n");
+        FB::VariantMap book;
+        book["name"] = info.bookName;
+        book["author"] = info.bookAuthor;
+        book["guid"] = info.bookGuid;
+        book["abstract"] = info.bookAbstract;
+
+        books.push_back(book); 
     }
 
     info.cbSize = sizeof(PrivBookInfo);
-    while(BambookGetNextPrivBookInfo(handle, &info) != BR_EOF){
+    while(BambookGetNextPrivBookInfo(handle, &info) == BR_SUCC){
         info.cbSize = sizeof(PrivBookInfo);
-        temp.append("Book Name:").append(QString::fromUtf8(info.bookName)).append("\n");
-        temp.append("Author:").append(QString::fromUtf8(info.bookAuthor)).append("\n");
-        temp.append("Book Guid:").append(QString::fromUtf8(info.bookGuid)).append("\n");
+        FB::VariantMap book;
+        book["name"] = info.bookName;
+        book["author"] = info.bookAuthor;
+        book["guid"] = info.bookGuid;
+        book["abstract"] = info.bookAbstract;
+
+        books.push_back(book); 
     }
-*/
-    }else{
-        return false;
-    }
+    
+    return books;
 }
 
-void BambookPluginAPI::testEvent(const FB::variant& var)
+FB::VariantMap BambookPluginAPI::getDeviceInfo()
 {
-    FireEvent("onfired", FB::variant_list_of(var)(true)(1));
+    FB::VariantMap device;
+    DeviceInfo info;
+    info.cbSize = sizeof(DeviceInfo);
+    if(BambookGetDeviceInfo(handle, &info) == BR_SUCC){
+        device["sn"] = info.sn;
+        device["firmwareVersion"] = info.firmwareVersion;
+        device["deviceVolume"] = info.deviceVolume;
+        device["spareVolume"] = info.spareVolume;
+    }
+    
+    return device;
 }
 
+FB::variant BambookPluginAPI::sendSnbToBambook(std::string path)
+{
+    return BambookAddPrivBook(handle, path.c_str(), sendSnbToBambookCallback, 0);
+}
+
+void BambookPluginAPI::sendSnbToBambookCallback(uint32_t status, uint32_t progress, intptr_t userData)
+{
+     BambookPluginAPI::instance->FireEvent("onSendSnbToBambook", FB::variant_list_of(status)(progress)(userData));
+}

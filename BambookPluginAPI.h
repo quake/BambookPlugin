@@ -23,29 +23,20 @@ public:
 
     BambookPluginPtr getPlugin();
 
-    // Read/Write property ${PROPERTY.ident}
-    std::string get_testString();
-    void set_testString(const std::string& val);
-
-    // Read-only property ${PROPERTY.ident}
-    std::string get_version();
-
-    // Method echo
-    FB::variant echo(const FB::variant& msg);
-
     FB::variant sdkVersion();
     FB::variant connect(std::string ip);
-    FB::variant getPrivBookInfos();
-    
-    // Method test-event
-    void testEvent(const FB::variant& s);
+    FB::VariantList getPrivBookInfos();
+    FB::VariantMap getDeviceInfo();
+    FB::variant sendSnbToBambook(std::string path);
+
+    static BambookPluginAPI *instance;
+    static void sendSnbToBambookCallback(uint32_t status, uint32_t progress, intptr_t userData);
 
 private:
     BambookPluginWeakPtr m_plugin;
     FB::BrowserHostPtr m_host;
     BB_HANDLE handle;
 
-    std::string m_testString;
 };
 
 #endif // H_BambookPluginAPI
