@@ -25,13 +25,20 @@ BambookPluginAPI *BambookPluginAPI::instance = NULL;
 ///////////////////////////////////////////////////////////////////////////////
 BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host) : m_plugin(plugin), m_host(host)
 {
-    registerMethod("sdkVersion",            make_method(this, &BambookPluginAPI::sdkVersion));
+    registerMethod("getSdkVersion",         make_method(this, &BambookPluginAPI::getSdkVersion));
     registerMethod("connect",               make_method(this, &BambookPluginAPI::connect));
+    registerMethod("disconnect",            make_method(this, &BambookPluginAPI::disconnect));
+    registerMethod("getConnectStatus",      make_method(this, &BambookPluginAPI::getConnectStatus));
     registerMethod("getPrivBookInfos",      make_method(this, &BambookPluginAPI::getPrivBookInfos));
     registerMethod("getDeviceInfo",         make_method(this, &BambookPluginAPI::getDeviceInfo));
-    registerMethod("sendSnbToBambook",         make_method(this, &BambookPluginAPI::sendSnbToBambook));    
+    registerMethod("addPrivBook",           make_method(this, &BambookPluginAPI::addPrivBook));
+    registerMethod("deletePrivBook",        make_method(this, &BambookPluginAPI::deletePrivBook));
+    registerMethod("replacePrivBook",       make_method(this, &BambookPluginAPI::replacePrivBook));
+    registerMethod("fetchPrivBook",         make_method(this, &BambookPluginAPI::fetchPrivBook));
     
-    registerEvent("onSendSnbToBambook");
+    registerEvent("onaddprivbook");
+    registerEvent("onreplaceprivbook");
+    registerEvent("onfetchprivbook");    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,19 +70,32 @@ BambookPluginPtr BambookPluginAPI::getPlugin()
 }
 
 
-FB::variant BambookPluginAPI::sdkVersion()
+int BambookPluginAPI::getSdkVersion()
 {
     uint32_t version;
     if(BambookGetSDKVersion(&version) == BR_SUCC){
         return version;
+    }else{
+        return 0;    
     }
-    return false;
 }
 
-FB::variant BambookPluginAPI::connect(std::string ip)
+int BambookPluginAPI::connect(std::string ip)
 {
     instance = this;
     return BambookConnect(ip.c_str(), 1000 * 30, &handle);
+}
+
+int BambookPluginAPI::disconnect()
+{
+    return BambookDisconnect(handle);
+}
+
+int BambookPluginAPI::getConnectStatus()
+{
+    uint32_t status;
+    BambookGetConnectStatus(handle, &status);
+    return status;
 }
 
 FB::VariantList BambookPluginAPI::getPrivBookInfos()
@@ -123,12 +143,37 @@ FB::VariantMap BambookPluginAPI::getDeviceInfo()
     return device;
 }
 
-FB::variant BambookPluginAPI::sendSnbToBambook(std::string path)
+int BambookPluginAPI::addPrivBook(std::string path)
 {
-    return BambookAddPrivBook(handle, path.c_str(), sendSnbToBambookCallback, 0);
+    return BambookAddPrivBook(handle, path.c_str(), addPrivBookCallback, 0);
 }
 
-void BambookPluginAPI::sendSnbToBambookCallback(uint32_t status, uint32_t progress, intptr_t userData)
+int BambookPluginAPI::deletePrivBook(std::string guid)
 {
-     BambookPluginAPI::instance->FireEvent("onSendSnbToBambook", FB::variant_list_of(status)(progress)(userData));
+    return BambookDeletePrivBook(handle, guid.c_str());
+}
+
+int BambookPluginAPI::replacePrivBook(std::string guid, std::string path)
+{
+    return BambookReplacePrivBook(handle, path.c_str(), guid.c_str(), replacePrivBookCallback, 0);
+}
+
+int BambookPluginAPI::fetchPrivBook(std::string guid, std::string path)
+{
+    return BambookFetchPrivBook(handle, guid.c_str(), path.c_str(), fetchPrivBookCallback, 0);
+}
+
+void BambookPluginAPI::addPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData)
+{
+     BambookPluginAPI::instance->FireEvent("onaddprivbook", FB::variant_list_of(status)(progress)(userData));
+}
+
+void BambookPluginAPI::replacePrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData)
+{
+     BambookPluginAPI::instance->FireEvent("onreplaceprivbook", FB::variant_list_of(status)(progress)(userData));
+}
+
+void BambookPluginAPI::fetchPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData)
+{
+     BambookPluginAPI::instance->FireEvent("onfetchprivbook", FB::variant_list_of(status)(progress)(userData));
 }

@@ -23,14 +23,21 @@ public:
 
     BambookPluginPtr getPlugin();
 
-    FB::variant sdkVersion();
-    FB::variant connect(std::string ip);
+    int getSdkVersion();
+    int connect(std::string ip);
+    int disconnect();
+    int getConnectStatus();
     FB::VariantList getPrivBookInfos();
     FB::VariantMap getDeviceInfo();
-    FB::variant sendSnbToBambook(std::string path);
+    int addPrivBook(std::string path);
+    int deletePrivBook(std::string guid);
+    int replacePrivBook(std::string guid, std::string path);
+    int fetchPrivBook(std::string guid, std::string path);    
 
     static BambookPluginAPI *instance;
-    static void sendSnbToBambookCallback(uint32_t status, uint32_t progress, intptr_t userData);
+    static void addPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);
+    static void replacePrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);
+    static void fetchPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);    
 
 private:
     BambookPluginWeakPtr m_plugin;
