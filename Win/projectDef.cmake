@@ -6,6 +6,10 @@
 # Windows template platform definition CMake file
 # Included from ../CMakeLists.txt
 
+SET(CORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty")
+INCLUDE_DIRECTORIES(${CORE_PATH}/bambook-sdk/include)
+SET(PLUGIN_INTERNAL_DEPS ${PLUGIN_INTERNAL_DEPS} ${CORE_PATH}/bambook-sdk/lib/BambookCore.lib)
+
 # remember that the current source dir is the project root; this file is in Win/
 file (GLOB PLATFORM RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     Win/[^.]*.cpp
