@@ -7,9 +7,9 @@
 # Included from ../CMakeLists.txt
 
 
-SET(CORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/")
-INCLUDE_DIRECTORIES(${CORE_PATH}/bambook-sdk/include)
-SET(PLUGIN_INTERNAL_DEPS ${PLUGIN_INTERNAL_DEPS} ${CORE_PATH}/bambook-sdk/lib/libBambookCore.so)
+SET(BAMBOOK_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/bambook-sdk/X11")
+INCLUDE_DIRECTORIES(${BAMBOOK_SDK_PATH}/include)
+SET(PLUGIN_INTERNAL_DEPS ${PLUGIN_INTERNAL_DEPS} ${BAMBOOK_SDK_PATH}/lib/libBambookCore.so)
 
 
 # remember that the current source dir is the project root; this file is in ${PLATFORM_NAME}/
