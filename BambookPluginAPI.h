@@ -35,15 +35,12 @@ public:
     int fetchPrivBook(std::string guid, std::string path);    
 
     static BambookPluginAPI *instance;
-    static void addPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);
-    static void replacePrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);
-    static void fetchPrivBookCallback(uint32_t status, uint32_t progress, intptr_t userData);    
+    static void privBookTransCallback(uint32_t status, uint32_t progress, intptr_t userData);
 
 private:
     BambookPluginWeakPtr m_plugin;
     FB::BrowserHostPtr m_host;
     BB_HANDLE handle;
-
 };
 
 #endif // H_BambookPluginAPI
