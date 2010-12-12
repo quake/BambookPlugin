@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Bambook on web</title>
+        <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.4.min.js"></script>
+        <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    </head>
+    <body>
+        <object id="bambookplugin" type="application/x-bambookplugin" width="0" height="0">
+        </object>
+        <input type="text" value="/tmp" id="tmp_folder"/> <input type="text" value="0" id="progress"/>
+        <ul>        
+            <li><input type="button" id="btn_connect" value="连接Bambook"/>  <input type="text" id="bambook_ip" value="192.168.250.2"/></li>
+            <li><input type="button" id="btn_list" value="列出Bambook上的自有书籍"/></li>
+            <li><input type="button" id="btn_upload" value="上传snb文件到Bambook"/> <input type="text" value="/tmp/e0bqingyunian.snb"/></li>
+        </ul>
+
+        <table><tbody id="bambook_books"></tbody></table>
+
+        <script type="text/javascript" src="application.js"></script>
+    </body>
+</html>
