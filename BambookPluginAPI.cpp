@@ -4,26 +4,20 @@
 
 \**********************************************************/
 
+#include "fstream"
+#include "stdio.h"
 #include "JSObject.h"
 #include "variant_list.h"
 #include "DOM/Document.h"
-
 #include "BambookPluginAPI.h"
+#include "BambookPlugin.h"
 #include "BambookCore.h"
+#include "base64.h"
+#include <boost/make_shared.hpp>
 
 BambookPluginAPI *BambookPluginAPI::instance = NULL;
 
-///////////////////////////////////////////////////////////////////////////////
-/// @fn BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host)
-///
-/// @brief  Constructor for your JSAPI object.  You should register your methods, properties, and events
-///         that should be accessible to Javascript from here.
-///
-/// @see FB::JSAPIAuto::registerMethod
-/// @see FB::JSAPIAuto::registerProperty
-/// @see FB::JSAPIAuto::registerEvent
-///////////////////////////////////////////////////////////////////////////////
-BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host) : m_plugin(plugin), m_host(host)
+BambookPluginAPI::BambookPluginAPI(boost::shared_ptr<BambookPlugin> plugin, FB::BrowserHostPtr host) : m_host(host), m_pluginWeak(plugin)
 {
     registerMethod("getSdkVersion",         make_method(this, &BambookPluginAPI::getSdkVersion));
     registerMethod("connect",               make_method(this, &BambookPluginAPI::connect));
@@ -35,38 +29,25 @@ BambookPluginAPI::BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr h
     registerMethod("deletePrivBook",        make_method(this, &BambookPluginAPI::deletePrivBook));
     registerMethod("replacePrivBook",       make_method(this, &BambookPluginAPI::replacePrivBook));
     registerMethod("fetchPrivBook",         make_method(this, &BambookPluginAPI::fetchPrivBook));
-    
+
+    registerMethod("addPrivBookByRawData",      make_method(this, &BambookPluginAPI::addPrivBookByRawData));
+    registerMethod("fetchPrivBookByRawData",      make_method(this, &BambookPluginAPI::fetchPrivBookByRawData));
+
     registerEvent("onprivbooktrans");
+    registerEvent("onprivbooktransbyrawdata");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// @fn BambookPluginAPI::~BambookPluginAPI()
-///
-/// @brief  Destructor.  Remember that this object will not be released until
-///         the browser is done with it; this will almost definitely be after
-///         the plugin is released.
-///////////////////////////////////////////////////////////////////////////////
 BambookPluginAPI::~BambookPluginAPI()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// @fn BambookPluginPtr BambookPluginAPI::getPlugin()
-///
-/// @brief  Gets a reference to the plugin that was passed in when the object
-///         was created.  If the plugin has already been released then this
-///         will throw a FB::script_error that will be translated into a
-///         javascript exception in the page.
-///////////////////////////////////////////////////////////////////////////////
-BambookPluginPtr BambookPluginAPI::getPlugin()
+boost::shared_ptr<BambookPlugin> BambookPluginAPI::getPlugin()
 {
-    BambookPluginPtr plugin(m_plugin.lock());
-    if (!plugin) {
-        throw FB::script_error("The plugin is invalid");
-    }
+    boost::shared_ptr<BambookPlugin> plugin = m_pluginWeak.lock();
+    if (!plugin)
+        throw FB::script_error("The plugin object has been destroyed");
     return plugin;
 }
-
 
 int BambookPluginAPI::getSdkVersion()
 {
@@ -161,7 +142,55 @@ int BambookPluginAPI::fetchPrivBook(std::string guid, std::string path)
     return BambookFetchPrivBook(handle, guid.c_str(), path.c_str(), privBookTransCallback, 0);
 }
 
+int BambookPluginAPI::fetchPrivBookByRawData(std::string guid)
+{
+    std::string tmpFolder = tmpdir();
+    std::string tmpFileName = tmpFolder + "/" + guid;
+    current_guid = guid;
+    return BambookFetchPrivBook(handle, guid.c_str(), tmpFolder.c_str(), fetchPrivBookByRawDataCallback, 0);
+}
+
+int BambookPluginAPI::addPrivBookByRawData(std::string guid, std::string rawdata)
+{
+    std::string decoded = base64_decode(rawdata);
+    std::string tmpFolder = tmpdir();
+    std::string tmpFileName = tmpFolder + "/" + guid;
+    current_guid = guid;
+    std::ofstream file(tmpFileName.c_str(), std::ios_base::out);
+    file << decoded;
+    file.close();
+    return BambookAddPrivBook(handle, tmpFileName.c_str(), privBookTransCallback, 0);
+}
+
+void BambookPluginAPI::firePrivBookTransByRawData() {
+    std::string tmpFolder = tmpdir();
+    std::string tmpFileName = tmpFolder + "/" + current_guid;
+    std::ifstream file(tmpFileName.c_str(), std::ios_base::binary);
+    if (file.is_open())  {
+        int length;
+        char * buffer;
+
+        file.seekg (0, std::ios::end);
+        length = file.tellg();
+        file.seekg (0, std::ios::beg);
+        buffer = new char [length];
+        file.read (buffer,length);
+        file.close();
+
+        std::string data = base64_encode((const unsigned char*)buffer, length);
+        FireEvent("onprivbooktransbyrawdata", FB::variant_list_of(data));
+    }
+}
+
 void BambookPluginAPI::privBookTransCallback(uint32_t status, uint32_t progress, intptr_t userData)
 {
+    BambookPluginAPI::instance->FireEvent("onprivbooktrans", FB::variant_list_of(status)(progress)(userData));
+}
+
+void BambookPluginAPI::fetchPrivBookByRawDataCallback(uint32_t status, uint32_t progress, intptr_t userData)
+{
+    if(status == TRANS_STATUS_DONE) {              
+        BambookPluginAPI::instance->firePrivBookTransByRawData();
+    }
     BambookPluginAPI::instance->FireEvent("onprivbooktrans", FB::variant_list_of(status)(progress)(userData));
 }

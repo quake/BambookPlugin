@@ -5,7 +5,6 @@
 \**********************************************************/
 
 #include <string>
-#include <sstream>
 #include <boost/weak_ptr.hpp>
 #include "JSAPIAuto.h"
 #include "BrowserHost.h"
@@ -18,10 +17,10 @@
 class BambookPluginAPI : public FB::JSAPIAuto
 {
 public:
-    BambookPluginAPI(BambookPluginPtr plugin, FB::BrowserHostPtr host);
+    BambookPluginAPI(boost::shared_ptr<BambookPlugin> plugin, FB::BrowserHostPtr host);
     virtual ~BambookPluginAPI();
 
-    BambookPluginPtr getPlugin();
+    boost::shared_ptr<BambookPlugin> getPlugin();
 
     int getSdkVersion();
     int connect(std::string ip);
@@ -32,15 +31,35 @@ public:
     int addPrivBook(std::string path);
     int deletePrivBook(std::string guid);
     int replacePrivBook(std::string guid, std::string path);
-    int fetchPrivBook(std::string guid, std::string path);    
+    int fetchPrivBook(std::string guid, std::string path);
+
+    int addPrivBookByRawData(std::string guid, std::string data);
+    int fetchPrivBookByRawData(std::string guid);
+
+    void firePrivBookTransByRawData();
 
     static BambookPluginAPI *instance;
     static void privBookTransCallback(uint32_t status, uint32_t progress, intptr_t userData);
+    static void fetchPrivBookByRawDataCallback(uint32_t status, uint32_t progress, intptr_t userData);
+
+    inline char * tmpdir(){
+        char *dirname;
+        dirname = std::getenv("TMP");
+        if(NULL == dirname)
+            dirname = std::getenv("TMPDIR");
+        if(NULL == dirname)
+            dirname = std::getenv("TEMP");
+        if(NULL == dirname){
+            dirname = ".";
+        }
+        return dirname;
+    }
 
 private:
-    BambookPluginWeakPtr m_plugin;
     FB::BrowserHostPtr m_host;
+    boost::weak_ptr<BambookPlugin> m_pluginWeak;
     BB_HANDLE handle;
+    std::string current_guid;
 };
 
 #endif // H_BambookPluginAPI

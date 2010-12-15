@@ -9,7 +9,14 @@ function addEvent(name, func) {
 }
 
 addEvent('privbooktrans', function(state, progress, userdata){
-    $("#progress").val(progress);
+    console.log(state + " | " + progress + " | " + userdata);
+});
+
+addEvent('privbooktransbyrawdata', function(data){
+    console.log("upload rawdata to server");
+    $.post("/welcome/test", {
+        data: data
+    });
 });
 
 $(function() {            
@@ -31,13 +38,8 @@ $(function() {
         $.tmpl("book_template", books).appendTo("#bambook_books");
     });
 
-    $("#btn_upload").click(function() {
-        bb.addPrivBook($(this).next().val());
-        return false;
-    });
-
     $("#bambook_books a.export").live('click', function() {
-        bb.fetchPrivBook($(this).parent().attr("guid"), $("#tmp_folder").val());
+        bb.fetchPrivBookByRawData($(this).parent().attr("guid"));
         return false;
     });
 
@@ -46,6 +48,13 @@ $(function() {
             bb.deletePrivBook($(this).parent().attr("guid"));
             return false;
         }
+    });
+
+    $("#btn_download").click(function() {
+        $.get($(this).next().val(), function(data){
+            bb.addPrivBookByRawData("temp.snb", data);
+        });
+        return false;
     });
 });
 
