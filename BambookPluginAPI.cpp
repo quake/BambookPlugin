@@ -156,7 +156,7 @@ int BambookPluginAPI::addPrivBookByRawData(std::string guid, std::string rawdata
     std::string tmpFolder = tmpdir();
     std::string tmpFileName = tmpFolder + "/" + guid;
     current_guid = guid;
-    std::ofstream file(tmpFileName.c_str(), std::ios_base::out);
+    std::ofstream file(tmpFileName.c_str(), std::ios_base::binary);
     file << decoded;
     file.close();
     return BambookAddPrivBook(handle, tmpFileName.c_str(), privBookTransCallback, 0);
