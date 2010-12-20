@@ -34,7 +34,7 @@ set(MOZILLA_PLUGINID "bambookplugindevteam.com/BambookPlugin")
 # strings
 set(FBSTRING_CompanyName "Bambook Plugin Dev Team")
 set(FBSTRING_FileDescription "")
-set(FBSTRING_PLUGIN_VERSION "1.0.0")
+set(FBSTRING_PLUGIN_VERSION "1.0.1")
 set(FBSTRING_LegalCopyright "Copyright 2010 Bambook Plugin Dev Team")
 set(FBSTRING_PluginFileName "np${PLUGIN_NAME}.dll")
 set(FBSTRING_ProductName "Bambook Plugin")

@@ -23,6 +23,7 @@ public:
     boost::shared_ptr<BambookPlugin> getPlugin();
 
     int getSdkVersion();
+    std::string getPluginVersion();
     int connect(std::string ip);
     int disconnect();
     int getConnectStatus();
@@ -34,6 +35,7 @@ public:
     int fetchPrivBook(std::string guid, std::string path);
 
     int addPrivBookByRawData(std::string guid, std::string data);
+    int replacePrivBookByRawData(std::string guid, std::string data);
     int fetchPrivBookByRawData(std::string guid);
 
     void firePrivBookTransByRawData();

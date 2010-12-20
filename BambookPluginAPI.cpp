@@ -31,7 +31,10 @@ BambookPluginAPI::BambookPluginAPI(boost::shared_ptr<BambookPlugin> plugin, FB::
     registerMethod("fetchPrivBook",         make_method(this, &BambookPluginAPI::fetchPrivBook));
 
     registerMethod("addPrivBookByRawData",      make_method(this, &BambookPluginAPI::addPrivBookByRawData));
-    registerMethod("fetchPrivBookByRawData",      make_method(this, &BambookPluginAPI::fetchPrivBookByRawData));
+    registerMethod("replacePrivBookByRawData",  make_method(this, &BambookPluginAPI::replacePrivBookByRawData));
+    registerMethod("fetchPrivBookByRawData",    make_method(this, &BambookPluginAPI::fetchPrivBookByRawData));
+
+    registerProperty("version", make_property(this, &BambookPluginAPI::getPluginVersion));
 
     registerEvent("onprivbooktrans");
     registerEvent("onprivbooktransbyrawdata");
@@ -47,6 +50,11 @@ boost::shared_ptr<BambookPlugin> BambookPluginAPI::getPlugin()
     if (!plugin)
         throw FB::script_error("The plugin object has been destroyed");
     return plugin;
+}
+
+std::string BambookPluginAPI::getPluginVersion()
+{
+    return "1.0.1";
 }
 
 int BambookPluginAPI::getSdkVersion()
@@ -160,6 +168,18 @@ int BambookPluginAPI::addPrivBookByRawData(std::string guid, std::string rawdata
     file << decoded;
     file.close();
     return BambookAddPrivBook(handle, tmpFileName.c_str(), privBookTransCallback, 0);
+}
+
+int BambookPluginAPI::replacePrivBookByRawData(std::string guid, std::string rawdata)
+{
+    std::string decoded = base64_decode(rawdata);
+    std::string tmpFolder = tmpdir();
+    std::string tmpFileName = tmpFolder + "/" + guid;
+    current_guid = guid;
+    std::ofstream file(tmpFileName.c_str(), std::ios_base::binary);
+    file << decoded;
+    file.close();
+    return BambookReplacePrivBook(handle, tmpFileName.c_str(), guid.c_str(), privBookTransCallback, 0);
 }
 
 void BambookPluginAPI::firePrivBookTransByRawData() {
