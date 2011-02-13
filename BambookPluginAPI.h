@@ -24,6 +24,7 @@ public:
 
     int getSdkVersion();
     std::string getPluginVersion();
+    std::string getErrorString(int errorCode);
     bool connect(std::string ip, const FB::JSObjectPtr &callback);
     void doConnect_thread(std::string ip, const FB::JSObjectPtr &callback);
     int disconnect();

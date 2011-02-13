@@ -20,6 +20,7 @@ BambookPluginAPI *BambookPluginAPI::instance = NULL;
 BambookPluginAPI::BambookPluginAPI(boost::shared_ptr<BambookPlugin> plugin, FB::BrowserHostPtr host) : m_host(host), m_pluginWeak(plugin)
 {
     registerMethod("getSdkVersion",         make_method(this, &BambookPluginAPI::getSdkVersion));
+    registerMethod("getErrorString",        make_method(this, &BambookPluginAPI::getErrorString));    
     registerMethod("connect",               make_method(this, &BambookPluginAPI::connect));
     registerMethod("disconnect",            make_method(this, &BambookPluginAPI::disconnect));
     registerMethod("getConnectStatus",      make_method(this, &BambookPluginAPI::getConnectStatus));
@@ -54,7 +55,7 @@ boost::shared_ptr<BambookPlugin> BambookPluginAPI::getPlugin()
 
 std::string BambookPluginAPI::getPluginVersion()
 {
-    return "1.0.1";
+    return "1.0.5";
 }
 
 int BambookPluginAPI::getSdkVersion()
@@ -65,6 +66,11 @@ int BambookPluginAPI::getSdkVersion()
     }else{
         return 0;    
     }
+}
+
+std::string BambookPluginAPI::getErrorString(int errorCode)
+{
+    return BambookGetErrorString(errorCode);
 }
 
 bool BambookPluginAPI::connect(std::string ip, const FB::JSObjectPtr &callback)
@@ -96,8 +102,8 @@ int BambookPluginAPI::getConnectStatus()
 FB::VariantList BambookPluginAPI::getPrivBookInfos()
 {
     FB::VariantList books;
-    PrivBookInfo info;
-    info.cbSize = sizeof(PrivBookInfo);
+    BambookBookInfo info;
+    info.cbSize = sizeof(BambookBookInfo);
     if(BambookGetFirstPrivBookInfo(handle, &info) == BR_SUCC){
         FB::VariantMap book;
         book["name"] = info.bookName;
@@ -107,10 +113,10 @@ FB::VariantList BambookPluginAPI::getPrivBookInfos()
 
         books.push_back(book); 
     }
-
-    info.cbSize = sizeof(PrivBookInfo);
+    
+    info.cbSize = sizeof(BambookBookInfo);
     while(BambookGetNextPrivBookInfo(handle, &info) == BR_SUCC){
-        info.cbSize = sizeof(PrivBookInfo);
+        info.cbSize = sizeof(BambookBookInfo);
         FB::VariantMap book;
         book["name"] = info.bookName;
         book["author"] = info.bookAuthor;
