@@ -1,263 +1,1458 @@
-ï»¿/**************************************************************
-** Copyright (C) 2009-2010 ç››å¤§ç½‘ç»œ
-** All right reserved
-***************************************************************
-**
-** é¡¹ç›®åç§°ï¼šBambook SDK
-** åŠŸèƒ½ç®€ä»‹ï¼šBambook PC å¼€å‘æ ¸å¿ƒç»„ä»¶å¤´æ–‡ä»¶
-**
-** åŸå§‹ä½œè€…ï¼šæœå£³ç”µå­ Bambook SDK é¡¹ç›®ç»„
-** å¤‡    æ³¨ï¼š
-** å»ºç«‹æ—¶é—´ï¼š2010-10-12
-** æœ€åæ›´æ–°ï¼š2010-11-05
-** ç‰ˆ    æœ¬ï¼š1.1
-***************************************************************
-** å•å…ƒæ ‡è¯†ï¼š$Id: $
-** ç‰ˆæœ¬å†å²ï¼š
-** ä¿® æ”¹ è€…ï¼š
-** æœ€è¿‘ä¿®æ”¹ï¼š
-**************************************************************/
+/*! \file BambookCore.h
+    \brief Bambook PC ¿ª·¢ºËĞÄ×é¼şÍ·ÎÄ¼ş
+
+    Copyright (C) 2009-2011 Ê¢´óÍøÂç All right reserved\n
+
+    ÏîÄ¿Ãû³Æ£ºBambook SDK\n
+    ¹¦ÄÜ¼ò½é£ºBambook PC ¿ª·¢ºËĞÄ×é¼şÍ·ÎÄ¼ş\n
+
+    Ô­Ê¼×÷Õß£º¹û¿Çµç×Ó Bambook SDK ÏîÄ¿×é\n
+    ½¨Á¢Ê±¼ä£º2010-10-12\n
+    ×îºó¸üĞÂ£º2011-01-05\n
+
+    µ¥Ôª±êÊ¶£º$Id $
+*/
 
 #ifndef __BAMBOOKCORE_H__
 #define __BAMBOOKCORE_H__
-#include <stdint.h>
+
 //==============================================================================
-// å…¬å…±ç±»å‹åŠå¸¸é‡å®šä¹‰
+// ¹«¹²ÀàĞÍ¼°³£Á¿¶¨Òå
 //==============================================================================
 
-// API è¿”å›å€¼ç±»å‹
-typedef int32_t BB_RESULT;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// è¿æ¥å¥æŸ„
-typedef intptr_t BB_HANDLE;
+//! \cond
+#ifndef __in
+#define __in
+#define __in_opt
+#define __inout
+#define __out
+#define __out_opt
+#define __out_ecount(n)
+#define __out_ecount_opt(n)
+#define __callback
+#endif
 
-// SDK ç‰ˆæœ¬å·
-#define BAMBOOK_SDK_VERSION 0x00090000
+typedef __int32             int32_t;
+typedef unsigned __int32    uint32_t;
 
-// ä½¿ç”¨ USB è¿æ¥ Bambook çš„è®¾å¤‡ IP
+#ifdef _WIN64
+typedef __int64             intptr_t;
+#else
+typedef __int32             intptr_t;
+#endif
+//! \endcond
+
+//! \addtogroup ÀàĞÍ¶¨Òå
+//! @{
+
+//! \addtogroup »ù±¾ÀàĞÍ¶¨Òå
+//! @{
+
+//! \name »ù±¾ÀàĞÍ¶¨Òå
+//! @{
+
+//! API ·µ»ØÖµÀàĞÍ
+typedef int32_t             BB_RESULT;
+
+//! ¶ÔÏó¾ä±ú
+typedef intptr_t            BB_HANDLE;
+//! @}
+//! @}
+//! @}
+
+//! \addtogroup MacroDef ºê¶¨Òå
+//! @{
+
+//! \addtogroup CommonMacro ¹«¹²³£Á¿¶¨Òå
+//! @{
+
+//! \name ¹«¹²³£Á¿¶¨Òå
+//! @{
+
+//! SDK °æ±¾ºÅ 0.9.7.0
+#define BAMBOOK_SDK_VERSION 0x00090700
+
+//! Ê¹ÓÃ USB Á¬½Ó Bambook µÄÉè±¸ IP
 #define DEFAULT_BAMBOOK_IP  "192.168.250.2"
 
-// å‡½æ•°è¿”å›å€¼å®šä¹‰
-#define BR_SUCC             0     // æ“ä½œæˆåŠŸ
-#define BR_FAIL             1001  // æ“ä½œå¤±è´¥
-#define BR_NOT_IMPL         1002  // è¯¥åŠŸèƒ½è¿˜æœªå®ç°
-#define BR_DISCONNECTED     1003  // ä¸è®¾å¤‡çš„è¿æ¥å·²æ–­å¼€
-#define BR_PARAM_ERROR      1004  // è°ƒç”¨å‡½æ•°ä¼ å…¥çš„å‚æ•°é”™è¯¯
-#define BR_TIMEOUT          1005  // æ“ä½œæˆ–é€šè®¯è¶…æ—¶
-#define BR_INVALID_HANDLE   1006  // ä¼ å…¥çš„å¥æŸ„æ— æ•ˆ
-#define BR_INVALID_FILE     1007  // ä¼ å…¥çš„æ–‡ä»¶ä¸å­˜åœ¨æˆ–æ ¼å¼æ— æ•ˆ
-#define BR_INVALID_DIR      1008  // ä¼ å…¥çš„ç›®å½•ä¸å­˜åœ¨
-#define BR_BUSY             1010  // è®¾å¤‡å¿™ï¼Œå¦ä¸€ä¸ªæ“ä½œè¿˜æœªå®Œæˆ
-#define BR_EOF              1011  // æ–‡ä»¶æˆ–æ“ä½œå·²ç»“æŸ
-#define BR_IO_ERROR         1012  // æ–‡ä»¶è¯»å†™å¤±è´¥
-#define BR_FILE_NOT_INSIDE  1013  // æŒ‡å®šçš„æ–‡ä»¶ä¸åœ¨åŒ…é‡Œ
+//! ×ÔÓĞÊé AppID
+#define PRIVBOOK_APPID      "999"
 
-// å½“å‰è¿æ¥çŠ¶æ€
-#define CONN_CONNECTED      0     // å·²è¿æ¥
-#define CONN_DISCONNECTED   1     // æœªè¿æ¥æˆ–è¿æ¥å·²æ–­å¼€
-#define CONN_CONNECTING     2     // æ­£åœ¨è¿æ¥
-#define CONN_WAIT_FOR_AUTH  3     // å·²è¿æ¥ï¼Œæ­£åœ¨ç­‰å¾…èº«ä»½éªŒè¯ï¼ˆæš‚æœªå®ç°ï¼‰
+//! API µ÷ÓÃ·½Ê½
+#define BBAPI               __cdecl
+//! @}
+//! @}
 
-//ä¼ è¾“çŠ¶æ€
-#define TRANS_STATUS_TRANS	0	//æ­£åœ¨ä¼ è¾“
-#define TRANS_STATUS_DONE	1	//ä¼ è¾“å®Œæˆ
-#define TRANS_STATUS_ERR	2	//ä¼ è¾“å‡ºé”™
+//! \addtogroup BBResult º¯Êı·µ»ØÖµ¶¨Òå
+//! @{
 
-//æŒ‰é”®å®šä¹‰
+//! \name º¯Êı·µ»ØÖµ¶¨Òå
+//! @{
+#define BR_SUCC             0     //!< ²Ù×÷³É¹¦
+#define BR_FAIL             1001  //!< ²Ù×÷Ê§°Ü
+#define BR_NOT_IMPL         1002  //!< ¸Ã¹¦ÄÜ»¹Î´ÊµÏÖ
+#define BR_DISCONNECTED     1003  //!< ÓëÉè±¸µÄÁ¬½ÓÒÑ¶Ï¿ª
+#define BR_PARAM_ERROR      1004  //!< µ÷ÓÃº¯Êı´«ÈëµÄ²ÎÊı´íÎó
+#define BR_TIMEOUT          1005  //!< ²Ù×÷»òÍ¨Ñ¶³¬Ê±
+#define BR_INVALID_HANDLE   1006  //!< ´«ÈëµÄ¾ä±úÎŞĞ§
+#define BR_INVALID_FILE     1007  //!< ÎÄ¼ş²»´æÔÚ»ò¸ñÊ½ÎŞĞ§
+#define BR_INVALID_DIR      1008  //!< Ä¿Â¼²»´æÔÚ
+#define BR_FIRM_NOT_SUPPORT 1009  //!< Éè±¸¹Ì¼ş²»Ö§³Ö¸Ã¹¦ÄÜ£¬ĞèÒªÉı¼¶µ½×îĞÂµÄ¹Ì¼ş°æ±¾
+#define BR_BUSY             1010  //!< Éè±¸Ã¦£¬ÁíÒ»¸ö²Ù×÷»¹Î´Íê³É
+#define BR_EOF              1011  //!< ÎÄ¼ş»ò²Ù×÷ÒÑ½áÊø
+#define BR_IO_ERROR         1012  //!< ÎÄ¼ş¶ÁĞ´Ê§°Ü
+#define BR_FILE_NOT_INSIDE  1013  //!< Ö¸¶¨µÄÎÄ¼ş²»ÔÚ°üÀï
+#define BR_USER_REFUSED     1014  //!< ÓÃ»§ÔÚÉè±¸ÉÏ¾Ü¾øÁËÁ¬½Ó
+#define BR_WAIT_FOR_AUTH    1015  //!< Éè±¸ÒÑÁ¬½Ó£¬µ«»¹Ã»ÓĞÍ¨¹ıÉí·İÑéÖ¤£¬ÎŞ·¨Ö´ĞĞÖ¸¶¨²Ù×÷
+#define BR_OUT_OF_BOUNDS    1016  //!< Ë÷Òı³¬³ö·¶Î§
+#define BR_FILE_EXISTS      1017  //!< \brief ÎÄ¼şÒÑ¾­´æÔÚ
+//! @}
+//! @}
+
+//! \addtogroup BBConn µ±Ç°Á¬½Ó×´Ì¬
+//! @{
+
+//! \name µ±Ç°Á¬½Ó×´Ì¬
+//! @{
+#define CONN_CONNECTED      0     //!< ÒÑÁ¬½Ó
+#define CONN_DISCONNECTED   1     //!< Î´Á¬½Ó¡¢Á¬½ÓÒÑ¶Ï¿ª»òÓÃ»§¾Ü¾øÁËÁ¬½Ó
+#define CONN_CONNECTING     2     //!< ÕıÔÚÁ¬½Ó
+#define CONN_WAIT_FOR_AUTH  3     //!< \brief ÒÑÁ¬½Ó£¬ÕıÔÚµÈ´ıÉí·İÑéÖ¤
+//! @}
+//! @}
+
+//! \addtogroup BBTrans ´«Êä×´Ì¬
+//! @{
+
+//! \name ´«Êä×´Ì¬
+//! @{
+#define TRANS_STATUS_TRANS  0     //!< ÕıÔÚ´«Êä
+#define TRANS_STATUS_DONE   1     //!< ´«ÊäÍê³É
+#define TRANS_STATUS_ERR    2     //!< \brief ´«Êä³ö´í
+//! @}
+//! @}
+//! @}
+
+//! \addtogroup ÀàĞÍ¶¨Òå
+//! @{
+
+//! \addtogroup Ã¶¾Ù¶¨Òå
+//! @{
+
+//! \name Ã¶¾Ù¶¨Òå
+//! @{
+
+//! °´¼ü¶¨Òå
 enum BambookKey
 {
-        BBKeyNum0 = 0, BBKeyNum1, BBKeyNum2, BBKeyNum3, BBKeyNum4,
-        BBKeyNum5, BBKeyNum6, BBKeyNum7, BBKeyNum8, BBKeyNum9,
-        BBKeyStar, BBKeyCross, BBKeyUp, BBKeyDown, BBKeyLeft, BBKeyRight, BBKeyPageUp, BBKeyPageDown,
-        BBKeyOK, BBKeyESC, BBKeyBookshelf, BBKeyStore, BBKeyTTS, BBKeyMenu, BBKeyInteract
+    BBKeyNum0 = 0, BBKeyNum1, BBKeyNum2, BBKeyNum3, BBKeyNum4,
+    BBKeyNum5, BBKeyNum6, BBKeyNum7, BBKeyNum8, BBKeyNum9,
+    BBKeyStar, BBKeyCross, BBKeyUp, BBKeyDown, BBKeyLeft, BBKeyRight, BBKeyPageUp, BBKeyPageDown,
+    BBKeyOK, BBKeyESC, BBKeyBookshelf, BBKeyStore, BBKeyTTS, BBKeyMenu, BBKeyInteract
 };
 
-// è®¾å¤‡ä¿¡æ¯ç»“æ„
+//! Éè±¸¹Ì¼şÖ§³ÖµÄ¹¦ÄÜ
+enum BambookDeviceCap
+{
+    BBCapCatalog = 0,               //!< ¶ÁĞ´·ÖÀà¹¦ÄÜ
+    BBCapGetBookSize,               //!< È¡×ÔÓĞÊéÎÄ¼ş´óĞ¡¹¦ÄÜ
+    BBCapBookmark,                  //!< ¶ÁĞ´Êé¼®ÔÄ¶ÁÎ»ÖÃ¹¦ÄÜ
+    BBCapGetLastReadBook,           //!< È¡×îºóÔÄ¶ÁÊé¼®¹¦ÄÜ
+    BBCapGetCurrentReadBook,        //!< È¡µ±Ç°ÔÄ¶ÁÊé¼®¹¦ÄÜ
+    BBCapKeyPress,                  //!< Ä£Äâ°´¼ü¹¦ÄÜ
+    BBCapTTSPlay                    //!< TTS ÓïÒô²¥·Å¹¦ÄÜ
+};
+//! @}
+//! @}
+
+//! \addtogroup ½á¹¹¶¨Òå
+//! @{
+
+//! ÒÑÁ¬½Óµ½µ±Ç°¼ÆËã»úµÄÉè±¸ĞÅÏ¢½á¹¹
+struct BambookDevInfo
+{
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    char ip[32];                  //!< Éè±¸IPµØÖ·
+    uint32_t protocalVersion;     //!< Éè±¸Ö§³ÖµÄ PC Í¨Ñ¶Ğ­Òé°æ±¾ºÅ
+};
+
+//! Éè±¸ĞÅÏ¢½á¹¹
 struct DeviceInfo
 {
-    uint32_t cbSize;              // ç»“æ„å¤§å°
-    char sn[20];                  // è®¾å¤‡åºåˆ—å·
-    char firmwareVersion[20];     // è®¾å¤‡å›ºä»¶ç‰ˆæœ¬
-    uint32_t deviceVolume;        // è®¾å¤‡æ€»å­˜å‚¨ç©ºé—´ï¼Œå•ä½ä¸ºKB
-    uint32_t spareVolume;         // å‰©ä½™å­˜å‚¨ç©ºé—´ï¼Œå•ä½ä¸ºKB
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    char sn[20];                  //!< Éè±¸ĞòÁĞºÅ
+    char firmwareVersion[20];     //!< Éè±¸¹Ì¼ş°æ±¾
+    uint32_t deviceVolume;        //!< Éè±¸×Ü´æ´¢¿Õ¼ä£¬µ¥Î»ÎªKB
+    uint32_t spareVolume;         //!< Ê£Óà´æ´¢¿Õ¼ä£¬µ¥Î»ÎªKB
+    uint32_t protocalVersion;     //!< Éè±¸Ö§³ÖµÄ PC Í¨Ñ¶Ğ­Òé°æ±¾ºÅ
 };
 
-// è‡ªæœ‰ä¹¦ä¿¡æ¯ç»“æ„
-struct PrivBookInfo
+//! Bambook Êé¼®ĞÅÏ¢½á¹¹
+struct BambookBookInfo
 {
-    uint32_t cbSize;              // ç»“æ„å¤§å°
-    char bookGuid[20];            // ä¹¦ç±id(åœ¨è®¾å¤‡é‡Œçš„snbæ–‡ä»¶å)
-    char bookName[80];            // ä¹¦å
-    char bookAuthor[40];          // ä½œè€…
-    char bookAbstract[256];       // æ‘˜è¦
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    uint32_t bookType;            //!< Êé¼®ÀàĞÍ£º 0 °æÈ¨Êé£»1 ×ÔÓĞÊé
+    char bookAppId[20];           //!< ÄÚÈİÌá¹©·½±êÊ¶£º"999" Îª×ÔÓĞÊé
+    char bookGuid[20];            //!< Êé¼®id(ÔÚÉè±¸ÀïµÄsnbÎÄ¼şÃû)
+    char bookName[80];            //!< ÊéÃû
+    char bookAuthor[40];          //!< ×÷Õß
+    char bookAbstract[256];       //!< ÕªÒª
+    char bookLatest[80];          //!< ×îĞÂÕÂ½Ú±êÌâ
+    char lastUpdateTime[20];      //!< ×îºó¸üĞÂÊ±¼ä
+    char bookCover[100];          //!< ·âÃæÍ¼Æ¬ URL
+    uint32_t unread;              //!< Î´¶ÁÕÂ½ÚÊı
+    uint32_t autoPay;             //!< ÊÇ·ñ×Ô¶¯¶©ÔÄ£º0 Î´×Ô¶¯¶©ÔÄ£»1 ×Ô¶¯¶©ÔÄ
+    uint32_t bookSize;            //!< ×ÔÓĞÊéÎÄ¼ş´óĞ¡£¬°æÈ¨ÊéÊ¼ÖÕÎª 0¡£ÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º23
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šä¼ è¾“è‡ªæœ‰ä¹¦å›è°ƒå‡½æ•°
-// å‚æ•°ï¼šstatus: ä¼ è¾“çŠ¶æ€
-//       progress: ä¼ è¾“è¿›åº¦ï¼Œ0..100
-//       userData: ç”¨æˆ·è°ƒç”¨APIæ—¶ä¼ å…¥çš„æ•°æ®
-// æ³¨é‡Šï¼šåœ¨è°ƒç”¨è‡ªæœ‰ä¹¦ä¼ è¾“æ—¶ä½¿ç”¨
-////////////////////////////////////////////////////////////////////////////////
-typedef void(* TransCallback)(uint32_t status, uint32_t progress, intptr_t userData);
+//! \name ¼æÈİÀàĞÍ¶¨Òå
+//! @{
+
+//! ÓÃÓÚ¼æÈİÔçÆÚ°æ±¾µÄ API ¶¨ÒåµÄË½ÓĞÊé½á¹¹±ğÃû
+typedef BambookBookInfo PrivBookInfo;
+//! @}
+
+//! Bambook Êé¼®ÕÂ½ÚĞÅÏ¢½á¹¹
+struct BambookChapterInfo
+{
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    char chapterId[20];           //!< ÕÂ½ÚID
+    char chapterName[80];         //!< ÕÂ½ÚÃû
+    uint32_t chapterBuyStatus;    //!< ÕÂ½Ú¹ºÂò×´Ì¬£º 0 Ãâ·ÑÕÂ½Ú£»1 ÒÑ¸¶·ÑvipÕÂ½Ú£»2 Î´¸¶·ÑvipÕÂ½Ú
+    uint32_t chapterDownloadStatus; //!< ÕÂ½ÚÏÂÔØ×´Ì¬£º 0 Î´ÏÂÔØ£»1 ÒÑÏÂÔØ
+};
+
+//! Bambook Êé¼®ÊéÇ©ĞÅÏ¢½á¹¹
+struct BambookBookmarkInfo 
+{
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    char chapterId[20];           //!< ÕÂ½ÚID
+    char bookmark[64];            //!< ÊéÇ©ĞÅÏ¢£¬Ö§³ÖÁ½ÖÖ¸ñÊ½£º½ÚµãID|´Ó¸Ã½ÚµãµÚÒ»¸ö×Ö½Ú¿ªÊ¼µÄ offset »òÕß Ò³Âë
+                                  /*!< ½ÚµãIDÖ¸µÄÊÇÔÚ snbc ÖĞµÄ text/image ½ÚµãµÄ±àºÅ£¨´Ó0¿ªÊ¼£©\n
+                                       ±ÈÈç£º"3|336" ±íÊ¾ÔÚÕÂ½ÚÖĞµÚÈı¸ö½ÚµãÆ«ÒÆ336×Ö½Ú£¨utf8±àÂë£©´¦\n
+                                       ÓÉÓÚÔÄ¶ÁÊ±ÊÇ°´ÕûÒ³ÅÅ°æµÄ£¬Ö¸¶¨µÄÆ«ÒÆÎ»ÖÃ¿ÉÄÜÔÚÕûÒ³µÄÈÎºÎÎ»ÖÃ¶ø²»ÊÇÆÁÄ»×óÉÏ½Ç\n
+                                       ÁíÍâ£¬Ò²¿ÉÒÔÖ±½ÓÖ¸¶¨ÕÂ½ÚÄÚµÄÒ³Âë£¬Èç "5" ±íÊ¾µÚ 5 Ò³ */
+    uint32_t lastReadTime;        //!< ×îºóÔÄ¶ÁÊ±¼ä£¬´Ó1970-1-1¿ªÊ¼µÄÃëÊı£¬ÉèÖÃÊéÇ©Ê± 0 ±íÊ¾²»ĞŞ¸Ä
+};
+
+//! SNB ÖĞµÄÎÄ¼şĞÅÏ¢½á¹¹
+struct SnbFileInfo
+{
+    uint32_t cbSize;              //!< ½á¹¹´óĞ¡
+    char filePathName[1024];      //!< ÎÄ¼şÔÚ SNB ÖĞµÄÏà¶ÔÂ·¾¶¼°ÎÄ¼şÃû
+    uint32_t fileSize;            //!< ÎÄ¼şÔ­Ê¼´óĞ¡
+};
+//! @}
+
+//! \addtogroup »Øµ÷º¯Êı¶¨Òå
+//! @{
+
+//! \name »Øµ÷º¯Êı¶¨Òå
+//! @{
+
+/*! ´«Êä×ÔÓĞÊé»Øµ÷º¯Êı
+
+    ÔÚµ÷ÓÃ×ÔÓĞÊé´«ÊäÊ±Ê¹ÓÃ
+
+    \param status   ´«Êä×´Ì¬
+    \param progress ´«Êä½ø¶È£¬0..100
+    \param userData ÓÃ»§µ÷ÓÃAPIÊ±´«ÈëµÄÊı¾İ
+*/
+typedef void ( BBAPI * TransCallback )(
+    __in uint32_t status,
+    __in uint32_t progress,
+    __in_opt intptr_t userData
+    );
+//! @}
+//! @}
+//! @}
+
+//! \weakgroup SDKAPI BambookCore API
+//! @{
 
 //==============================================================================
-// SDK API å‡½æ•°å£°æ˜
+//! \addtogroup BaseAPI »ù´¡ API
 //==============================================================================
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šå–å¾—SDK DLLç‰ˆæœ¬å·
-// å‚æ•°ï¼šversion: æŒ‡é’ˆï¼Œè¿”å›ç‰ˆæœ¬å·
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCC
-// æ³¨é‡Šï¼šè°ƒç”¨è¯¥å‡½æ•°å¯ä»¥è¿”å›DLLæ”¯æŒSDKç‰ˆæœ¬å·ï¼Œå¯ç”¨äºå…¼å®¹æ€§å¤„ç†
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookGetSDKVersion(uint32_t * version);
+//! @{
+/*! È¡µÃSDK DLL°æ±¾ºÅ
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šè¿æ¥Bambookè®¾å¤‡
-// å‚æ•°ï¼šlpszIP: Bambook IPåœ°å€ï¼Œä¼ ç©ºæ—¶ä½¿ç”¨é»˜è®¤å€¼ DEFAULT_BAMBOOK_IP
-//       timeOut: è¶…æ—¶å€¼ï¼Œå•ä½æ¯«ç§’ï¼Œ0ä¸ºé»˜è®¤
-//       hConn: å¥æŸ„æŒ‡é’ˆï¼Œæ‰§è¡ŒæˆåŠŸè¿”å›è¿æ¥å¥æŸ„
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAILï¼Œè¶…æ—¶è¿”å› BR_TIMEOUT
-// æ³¨é‡Šï¼šè°ƒç”¨å‡½æ•°åä¼šé˜»å¡æ‰§è¡Œï¼Œè¿æ¥æˆåŠŸå hConn ä¸ºè¿æ¥å¥æŸ„ã€‚
-//       è¿æ¥è¢«ä¸­æ–­æˆ–é€šè®¯ç»“æŸååº”è°ƒç”¨ BambookDisconnect é‡Šæ”¾èµ„æº
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookConnect(const char * lpszIP, uint32_t timeOut, BB_HANDLE * hConn);
+    µ÷ÓÃ¸Ãº¯Êı¿ÉÒÔ·µ»ØDLLÖ§³ÖSDK°æ±¾ºÅ£¬¿ÉÓÃÓÚ¼æÈİĞÔ´¦Àí
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šæ–­å¼€Bambookè®¾å¤‡çš„è¿æ¥
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL
-// æ³¨é‡Šï¼šè°ƒç”¨å‡½æ•°åä¼šé˜»å¡æ‰§è¡Œï¼Œç›´åˆ°è¿æ¥è¢«æ–­å¼€æˆ–å¤±è´¥ï¼ŒæˆåŠŸå hConn å¥æŸ„å°†ä¸å¯ç”¨
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookDisconnect(BB_HANDLE hConn);
+    \param version Ö¸Õë£¬·µ»Ø°æ±¾ºÅ
+    \return ³É¹¦·µ»Ø BR_SUCC
+*/
+BB_RESULT
+BBAPI
+BambookGetSDKVersion (
+    __out uint32_t * version
+    );
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šæŸ¥è¯¢å½“å‰Bambookè®¾å¤‡çš„è¿æ¥çŠ¶æ€
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       status: æŒ‡é’ˆï¼Œè¿”å›è¿æ¥çŠ¶æ€
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL
-// æ³¨é‡Šï¼šåº”ç”¨åœ¨è°ƒç”¨å…¶å®ƒAPIå‰å¯è°ƒç”¨è¯¥å‡½æ•°ä»¥æŸ¥è¯¢è¿æ¥çŠ¶æ€
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookGetConnectStatus(BB_HANDLE hConn, uint32_t * status);
+/*! ·µ»Ø´íÎóÂë¶ÔÓ¦µÄÖĞÎÄº¬Òå
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šè·å–BambookåŸºæœ¬ä¿¡æ¯
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       pInfo: ä¿¡æ¯æŒ‡é’ˆï¼Œç”¨äºè¿”å›åŸºæœ¬ä¿¡æ¯ã€‚è°ƒç”¨å‰åº”è®¾ç½® pInfo->cbSize = SizeOf(DeviceInfo)
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-//       å¦‚æœ pInfo->cbSize ä¸æ­£ç¡®å°†è¿”å› BR_PARAM_ERROR
-// æ³¨é‡Šï¼šè°ƒç”¨å‡½æ•°åä¼šé˜»å¡æ‰§è¡Œï¼Œç›´åˆ°æ“ä½œæˆåŠŸæˆ–å¤±è´¥
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookGetDeviceInfo(BB_HANDLE hConn, DeviceInfo * pInfo);
+    ¸Ãº¯ÊıÓÃÀ´È¡µÃ´íÎó×Ö·û´®£¬Èç¹û´«ÈëÎ´¶¨ÒåµÄ´íÎó´úÂë£¬½«·µ»Ø "Î´Öª´íÎó"
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šè·å–Bambookç¬¬ä¸€æœ¬è‡ªæœ‰ä¹¦ä¿¡æ¯
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       pInfo: ä¿¡æ¯æŒ‡é’ˆï¼Œç”¨äºè¿”å›è‡ªæœ‰ä¹¦ä¿¡æ¯ã€‚è°ƒç”¨å‰åº”è®¾ç½® pInfo->cbSize = SizeOf(PrivBookInfo)
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¦‚æœæ‰¾ä¸åˆ°è‡ªæœ‰ä¹¦è¿”å› BR_EOFï¼Œå…¶å®ƒé”™è¯¯è¿”å›é”™è¯¯ä»£ç 
-// æ³¨é‡Šï¼šè°ƒç”¨è¯¥å‡½æ•°åå°†ä»å¤´å¼€å§‹ä»è®¾å¤‡æŸ¥æ‰¾è‡ªæœ‰ä¹¦ä¿¡æ¯ï¼ŒæˆåŠŸåå¯ä»¥å†æ¬¡è°ƒç”¨ BambookGetNextPrivBookInfo
-//       æŸ¥æ‰¾å‰©ä¸‹çš„è‡ªæœ‰ä¹¦ä¿¡æ¯ã€‚è¯¥å‡½æ•°ä¼šé˜»å¡æ‰§è¡Œï¼Œç›´åˆ°æ“ä½œæˆåŠŸæˆ–å¤±è´¥
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookGetFirstPrivBookInfo(BB_HANDLE hConn, PrivBookInfo * pInfo);
+    \param nCode ´íÎó´úÂë
+    \return ´íÎóĞÅÏ¢×Ö·û´®Ö¸Õë
+*/
+const char *
+BBAPI 
+BambookGetErrorString (
+    __in BB_RESULT nCode
+    );
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šè·å–Bambookä¸‹ä¸€æœ¬è‡ªæœ‰ä¹¦ä¿¡æ¯
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       pInfo: ä¿¡æ¯æŒ‡é’ˆï¼Œç”¨äºè¿”å›è‡ªæœ‰ä¹¦ä¿¡æ¯ã€‚è°ƒç”¨å‰åº”è®¾ç½® pInfo->cbSize = SizeOf(PrivBookInfo)
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¦‚æœæ‰¾ä¸åˆ°è‡ªæœ‰ä¹¦è¿”å› BR_EOFï¼Œå…¶å®ƒé”™è¯¯è¿”å›é”™è¯¯ä»£ç 
-// æ³¨é‡Šï¼šåœ¨è°ƒç”¨ BambookGetFirstPrivBookInfo æˆåŠŸåå†è°ƒç”¨æœ¬å‡½æ•°ï¼ŒæŸ¥æ‰¾åç»§çš„è‡ªæœ‰ä¹¦ä¿¡æ¯ã€‚
-//       è¯¥å‡½æ•°ä¼šé˜»å¡æ‰§è¡Œï¼Œç›´åˆ°æ“ä½œæˆåŠŸæˆ–å¤±è´¥
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookGetNextPrivBookInfo(BB_HANDLE hConn, PrivBookInfo * pInfo);
+/*! Éè¶¨ BambookCore µÄ API ½ÓÊÕºÍ·µ»ØµÄ×Ö·û´®Ê¹ÓÃµÄ×Ö·û¼¯
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šå‘Bambookä¼ è¾“è‡ªæœ‰ä¹¦ï¼Œä¼ åˆ°Bambookä»¥åçš„ä¹¦ç±IDä¸ºéšæœºç”Ÿæˆçš„å­—ä¸²
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       pszSnbFile: è‡ªæœ‰ä¹¦å…¨è·¯å¾„æ–‡ä»¶å
-//       pCallbackFunc: ä¼ è¾“è¿‡ç¨‹ä¸­å›è°ƒå‡½æ•°ï¼Œå›è°ƒå‡½æ•°å°†åœ¨å•ç‹¬çš„çº¿ç¨‹ä¸­æ‰§è¡Œ
-//       userData: åœ¨å›è°ƒä¸­ä¼ å›
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-// æ³¨é‡Šï¼šè°ƒç”¨è¯¥å‡½æ•°åç«‹å³è¿”å›ã€‚å¦‚æœè°ƒç”¨æˆåŠŸï¼Œä¼ è¾“è¿‡ç¨‹ä¼šè°ƒç”¨å›è°ƒå‡½æ•°é€šçŸ¥çŠ¶æ€å’Œè¿›åº¦
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookAddPrivBook(BB_HANDLE hConn, const char * pszSnbFile,
-                                        TransCallback pCallbackFunc, intptr_t userData);
+    Í¨³£¸Ãº¯ÊıÓ¦¸ÃÔÚÓ¦ÓÃ³ÌĞò³õÊ¼»¯Ê±µ÷ÓÃ£¬¿É¿ØÖÆËùÓĞ API µÄ×Ö·û´®±àÂë£¬Ä¬ÈÏÎª "gbk"
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šå‘Bambookä¼ è¾“è‡ªæœ‰ä¹¦ï¼Œå¹¶æŒ‡å®šä¹¦ç±IDï¼Œä¹¦ç±IDé•¿åº¦å¤§äº0ä¸å¾—è¶…è¿‡char[20]
-//       IDä¸ºè‹±æ–‡å’Œå­—æ¯ï¼Œæœ€åå››ä½ä¸º".snb"ã€‚
-//       æœ¬å‡½æ•°å¯ä»¥ç”¨äºæ›¿æ¢Bambookå†…ç‰¹å®šä¹¦ç±ã€‚
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       pszSnbFile: è‡ªæœ‰ä¹¦å…¨è·¯å¾„æ–‡ä»¶å
-//       lpszBookID: ä¹¦ç±ID
-//       pCallbackFunc: ä¼ è¾“è¿‡ç¨‹ä¸­å›è°ƒå‡½æ•°ï¼Œå›è°ƒå‡½æ•°å°†åœ¨å•ç‹¬çš„çº¿ç¨‹ä¸­æ‰§è¡Œ
-//       userData: åœ¨å›è°ƒä¸­ä¼ å›
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-// æ³¨é‡Šï¼šè°ƒç”¨è¯¥å‡½æ•°åç«‹å³è¿”å›ã€‚å¦‚æœè°ƒç”¨æˆåŠŸï¼Œä¼ è¾“è¿‡ç¨‹ä¼šè°ƒç”¨å›è°ƒå‡½æ•°é€šçŸ¥çŠ¶æ€å’Œè¿›åº¦
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookReplacePrivBook(BB_HANDLE hConn, const char * pszSnbFile, const char * lpszBookID,
-                                            TransCallback pCallbackFunc, intptr_t userData);
+    \param lpszEncoding ×Ö·û¼¯Ãû³Æ£¬Ö»Ö§³Ö "utf8" ºÍ "gbk"
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬²ÎÊı²»ÕıÈ··µ»Ø BR_PARAM_ERROR
+*/
+BB_RESULT
+BBAPI 
+BambookSetCharacterEncoding(
+    __in const char * lpszEncoding
+    );
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šåˆ é™¤Bambookè‡ªæœ‰ä¹¦
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       lpszBookID: å¯¹åº”è‡ªæœ‰ä¹¦ä¿¡æ¯ä¸­çš„ bookGuid
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-// æ³¨é‡Šï¼šè¯¥å‡½æ•°ä¼šé˜»å¡æ‰§è¡Œï¼Œç›´åˆ°æ“ä½œæˆåŠŸæˆ–å¤±è´¥
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookDeletePrivBook(BB_HANDLE hConn, const char * lpszBookID);
+/*! È¡µÃ BambookCore µÄ API ½ÓÊÕºÍ·µ»ØµÄ×Ö·û´®Ê¹ÓÃµÄ×Ö·û¼¯
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šå‘Bambookè¯·æ±‚è‡ªæœ‰ä¹¦æ–‡ä»¶
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       lpszBookID: å¯¹åº”è‡ªæœ‰ä¹¦ä¿¡æ¯ä¸­çš„ bookGuid
-//       lpszFilePath: æ¥æ”¶è‡ªæœ‰ä¹¦æ–‡ä»¶å­˜æ”¾ç›®å½•
-//       pCallbackFunc: ä¼ è¾“è¿‡ç¨‹ä¸­å›è°ƒå‡½æ•°ï¼Œå›è°ƒå‡½æ•°å°†åœ¨å•ç‹¬çš„çº¿ç¨‹ä¸­æ‰§è¡Œ
-//       userData: åœ¨å›è°ƒä¸­ä¼ å›
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-// æ³¨é‡Šï¼šè°ƒç”¨è¯¥å‡½æ•°åç«‹å³è¿”å›ã€‚å¦‚æœè°ƒç”¨æˆåŠŸï¼Œä¼ è¾“è¿‡ç¨‹ä¼šè°ƒç”¨å›è°ƒå‡½æ•°é€šçŸ¥çŠ¶æ€å’Œè¿›åº¦
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookFetchPrivBook(BB_HANDLE hConn, const char * lpszBookID, const char * lpszFilePath,
-                                          TransCallback pCallbackFunc, intptr_t userData);
+    \param lpszEncoding ·µ»Ø×Ö·û¼¯Ãû³Æ£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬²ÎÊı²»ÕıÈ··µ»Ø BR_PARAM_ERROR
+*/
+BB_RESULT
+BBAPI 
+BambookGetCharacterEncoding(
+    __out_ecount(20) char * lpszEncoding
+    );
+//! @}
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šå‘Bambookå‘é€æŒ‰é”®å‘½ä»¤
-// å‚æ•°ï¼šhConn: è¿æ¥å¥æŸ„
-//       key: æŒ‰é”®å€¼
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAIL æˆ–é”™è¯¯åŸå› ä»£ç 
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookKeyPress(BB_HANDLE hConn, BambookKey key);
+//==============================================================================
+//! \addtogroup ConnAPI Éè±¸Á¬½ÓÏà¹Ø API
+//==============================================================================
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šæŠŠä¸€ä¸ªç¬¦åˆ SNB ç›®å½•ç»“æ„çš„ç›®å½•æ‰“æˆ SNB åŒ…
-// å‚æ•°ï¼šsnbName: ç”Ÿæˆçš„ snb æ–‡ä»¶å
-//       rootDir: è¦æ‰“åŒ…çš„æ ¹ç›®å½•
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAILã€BR_IO_ERROR æˆ–é”™è¯¯åŸå› ä»£ç 
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookPackSnbFromDir(const char * snbName, const char * rootDir);
+//! @{
+/*! È¡µÃµÚÒ»¸öÁ¬½Óµ½µ±Ç°¼ÆËã»úµÄ Bambook Éè±¸ĞÅÏ¢
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šæ ¹æ®ç›¸å¯¹è·¯å¾„æ–‡ä»¶åä» SNB åŒ…ä¸­è§£å‡ºä¸€ä¸ªæ–‡ä»¶
-// å‚æ•°ï¼šsnbName: è¦æ“ä½œçš„ snb æ–‡ä»¶å
-//       relativePath: è¦è§£å‹çš„æ–‡ä»¶åœ¨åŒ…ä¸­çš„ç›¸å¯¹è·¯å¾„å’Œæ–‡ä»¶åï¼Œæ¯”å¦‚ï¼š"snbf/book.snbf"
-//       outputName: è§£å‹å‡ºæ¥çš„æ–‡ä»¶ä¿å­˜çš„å…¨è·¯å¾„æ–‡ä»¶å
-// è¿”å›ï¼šæˆåŠŸè¿”å› BR_SUCCï¼Œå¤±è´¥è¿”å› BR_FAILã€BR_IO_ERRORã€BR_FILE_NOT_INSIDE æˆ–é”™è¯¯åŸå› ä»£ç 
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookUnpackFileFromSnb(const char * snbName, const char * relativePath, const char * outputName);
+    \param dwFlags  ²éÕÒ²ÎÊı£¬Ä¿Ç°Î´Ê¹ÓÃ£¬µ÷ÓÃÊ±Ó¦´«Èë 0
+    \param pInfo    ·µ»ØÉè±¸ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookDevInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½Éè±¸·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI
+BambookGetFirstDevice (
+    __in uint32_t dwFlags,
+    __out BambookDevInfo * pInfo
+    );
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šæ£€æŸ¥ä¸€ä¸ªæ–‡ä»¶æ˜¯å¦åˆæ³•çš„ SNB æ–‡ä»¶
-// å‚æ•°ï¼šsnbName: è¦æ“ä½œçš„ snb æ–‡ä»¶å
-// è¿”å›ï¼šå¦‚æœæ–‡ä»¶åˆæ³• BR_SUCCï¼Œå¦åˆ™è¿”å› BR_INVALID_FILE æˆ–é”™è¯¯åŸå› ä»£ç 
-////////////////////////////////////////////////////////////////////////////////
-extern "C" BB_RESULT BambookVerifySnbFile(const char * snbName);
+/*! È¡µÃÏÂÒ»¸öÁ¬½Óµ½µ±Ç°¼ÆËã»úµÄ Bambook Éè±¸ĞÅÏ¢
 
-////////////////////////////////////////////////////////////////////////////////
-// åŠŸèƒ½ï¼šè¿”å›é”™è¯¯ç å¯¹åº”çš„ä¸­æ–‡å«ä¹‰
-// å‚æ•°ï¼šnCode: é”™è¯¯ä»£ç 
-// è¿”å›ï¼šé”™è¯¯ä¿¡æ¯å­—ç¬¦ä¸²æŒ‡é’ˆ
-// æ³¨é‡Šï¼šè¯¥å‡½æ•°ç”¨æ¥å–å¾—é”™è¯¯å­—ç¬¦ä¸²ï¼Œå¦‚æœä¼ å…¥æœªå®šä¹‰çš„é”™è¯¯ä»£ç ï¼Œå°†è¿”å› "æœªçŸ¥é”™è¯¯"
-////////////////////////////////////////////////////////////////////////////////
-extern "C" const char * BambookGetErrorString(BB_RESULT nCode);
+    \param pInfo    ·µ»ØÉè±¸ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookDevInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½Éè±¸·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI
+BambookGetNextDevice (
+    __out BambookDevInfo * pInfo
+    );
+
+/*! Á¬½Ó Bambook Éè±¸
+
+    µ÷ÓÃº¯Êıºó»á×èÈûÖ´ĞĞ£¬Á¬½Ó³É¹¦ºó hConn ÎªÁ¬½Ó¾ä±ú¡£\n
+    Èç¹û timeOut Îª 0£¬µ±Éè±¸Ö§³ÖÓÃ»§ÑéÖ¤Ê±£¬µ÷ÓÃº¯Êıºó»áµÈ´ıÓÃ»§ÔÚÉè±¸¶Ë½ø
+    ĞĞÈ·ÈÏ£¬Í¨¹ı»ò¾Ü¾øºóº¯Êı²Å»á·µ»Ø¡£\n
+    Èç¹û timeOut Îª·Ç 0 Öµ£¬ÔòÈç¹ûÔÚ timeOut Ê±¼äÄÚÁ¬½ÓÉÏÉè±¸£¬¾Í·µ»Ø¾ä±úºÍ
+    ³É¹¦£¬µ«´ËÊ±Ó¦ÓÃ³ÌĞòĞèÒª×ÔĞĞÍ¨¹ı BambookGetConnectStatus È¥¼ì²éÉè±¸ÊÇ·ñ
+    ÔÚµÈ´ıÓÃ»§ÑéÖ¤Í¨¹ı×´Ì¬£¬Ö»ÓĞ×´Ì¬Îª CONN_CONNECTED Ê±²Å¿É²Ù×÷Éè±¸¡£\n
+    Á¬½Ó±»ÖĞ¶Ï»òÍ¨Ñ¶½áÊøºóÓ¦µ÷ÓÃ BambookDisconnect ÊÍ·Å×ÊÔ´
+
+    \param lpszIP   Bambook IPµØÖ·£¬´«¿ÕÊ±Ê¹ÓÃÄ¬ÈÏÖµ DEFAULT_BAMBOOK_IP
+    \param timeOut  ³¬Ê±Öµ£¬µ¥Î»ºÁÃë£¬0ÎªÄ¬ÈÏ¡£
+    \param hConn    ¾ä±úÖ¸Õë£¬Ö´ĞĞ³É¹¦·µ»ØÁ¬½Ó¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL£¬³¬Ê±·µ»Ø BR_TIMEOUT£¬ÓÃ»§¾Ü¾øÁ¬½Ó·µ»Ø BR_USER_REFUSED¡£
+*/
+BB_RESULT
+BBAPI 
+BambookConnect (
+    __in const char * lpszIP,
+    __in uint32_t timeOut,
+    __out BB_HANDLE * hConn
+    );
+
+/*! ¶Ï¿ª Bambook Éè±¸µÄÁ¬½Ó
+
+    µ÷ÓÃº¯Êıºó»á×èÈûÖ´ĞĞ£¬Ö±µ½Á¬½Ó±»¶Ï¿ª»òÊ§°Ü£¬³É¹¦ºó hConn ¾ä±ú½«²»¿ÉÓÃ
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI
+BambookDisconnect (
+    __in BB_HANDLE hConn
+    );
+
+/*! ²éÑ¯µ±Ç° Bambook Éè±¸µÄÁ¬½Ó×´Ì¬
+
+    Ó¦ÓÃÔÚµ÷ÓÃÆäËüAPIÇ°¿Éµ÷ÓÃ¸Ãº¯ÊıÒÔ²éÑ¯Á¬½Ó×´Ì¬¡£\n
+    Èç¹ûÊ¹ÓÃ½¨Á¢Á¬½ÓÊ±´«ÈëÁË timeOut Öµ£¬ĞèÒªÔÚµ÷ÓÃÆäËü API Ö®Ç°Ê¹ÓÃ¸Ãº¯
+    Êı²éÑ¯Á¬½Ó×´Ì¬£¬Ö»ÓĞ×´Ì¬Îª CONN_CONNECTED Ê±²Å¿É½øĞĞÆäËü²Ù×÷¡£
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param status   Ö¸Õë£¬·µ»ØÁ¬½Ó×´Ì¬
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetConnectStatus (
+    __in BB_HANDLE hConn,
+    __out uint32_t * status
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup InfoAPI Éè±¸ĞÅÏ¢Ïà¹Ø API
+//==============================================================================
+
+//! @{
+/*! »ñÈ¡ Bambook »ù±¾ĞÅÏ¢
+
+    µ÷ÓÃº¯Êıºó»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»Ø»ù±¾ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(DeviceInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë¡£
+                    Èç¹û pInfo->cbSize ²»ÕıÈ·½«·µ»Ø BR_PARAM_ERROR
+*/
+BB_RESULT
+BBAPI 
+BambookGetDeviceInfo (
+    __in BB_HANDLE hConn,
+    __out DeviceInfo * pInfo
+    );
+
+/*! ·µ»Ø Bambook Êé¼®ÁĞ±í±ä¸ü¼ÆÊıÆ÷
+
+    µ±ÓÃ»§Í¨¹ıÔÆÌİ¡¢ÆäËüÓ¦ÓÃ³ÌĞò»òÖ±½ÓÔÚÉè±¸ÉÏÊÖ¹¤¼ÓÊé¡¢É¾Êé£¬ÒÔ¼°Éè±¸´Ó·ş
+    ÎñÆ÷ÉÏÍ¬²½ÏÂĞÂÊéÊ±£¬±ä¸ü¼ÆÊıÆ÷»á×Ô¶¯¼Ó 1£¬Ó¦ÓÃ¿ÉÒÔ¸ù¾İ¼ÆÊıÆ÷µÄÖµÀ´¾ö¶¨
+    ÊÇ·ñĞèÒª¸üĞÂÊé¼Ü¡£Ê¹ÓÃ BambookReplacePrivBook API ¿ÉÄÜ²»»áÓ°Ïì±ä¸ü¼ÆÊı¡£
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param uChangCount  ·µ»ØÊé¼®ÁĞ±í±ä¸ü¼ÆÊı£¬Ã¿´Î¼ì²âµ½Éè±¸Êé¼Ü±ä¸ü£¬¸Ã¼ÆÊıÆ÷»á¼Ó 1
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetBookShelfChangeCount (
+    __in BB_HANDLE hConn,
+    __out uint32_t * uChangCount
+    );
+
+/*! ¼ì²éµ±Ç°Á¬½ÓµÄÉè±¸ÊÇ·ñÖ§³ÖÖ¸¶¨µÄ¹¦ÄÜ
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param devCap   Òª¼ì²éµÄ¹¦ÄÜ
+    \return         Èç¹ûÉè±¸Ö§³Ö¸Ã¹¦ÄÜ·µ»Ø BR_SUCC£¬²»Ö§³ÖÊ±·µ»Ø BR_FIRM_NOT_SUPPORT£¬
+                    ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookDeviceSupports (
+    __in BB_HANDLE hConn,
+    __in BambookDeviceCap devCap
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup BookInfoAPI Êé¼®ĞÅÏ¢Ïà¹Ø API
+//==============================================================================
+
+//! @{
+/*! »ñÈ¡ Bambook µÚÒ»±¾×ÔÓĞÊéĞÅÏ¢
+
+    µ÷ÓÃ¸Ãº¯Êıºó½«´ÓÍ·¿ªÊ¼´ÓÉè±¸²éÕÒ×ÔÓĞÊéĞÅÏ¢£¬³É¹¦ºó¿ÉÒÔÔÙ´Îµ÷ÓÃ BambookGetNextPrivBookInfo
+    ²éÕÒÊ£ÏÂµÄ×ÔÓĞÊéĞÅÏ¢¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»Ø×ÔÓĞÊéĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½×ÔÓĞÊé·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetFirstPrivBookInfo (
+    __in BB_HANDLE hConn, 
+    __out BambookBookInfo * pInfo
+    );
+
+/*! »ñÈ¡ Bambook ÏÂÒ»±¾×ÔÓĞÊéĞÅÏ¢
+
+    ÔÚµ÷ÓÃ BambookGetFirstPrivBookInfo ³É¹¦ºóÔÙµ÷ÓÃ±¾º¯Êı£¬²éÕÒºó¼ÌµÄ×ÔÓĞÊéĞÅÏ¢¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»Ø×ÔÓĞÊéĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½×ÔÓĞÊé·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetNextPrivBookInfo (
+    __in BB_HANDLE hConn, 
+    __out BambookBookInfo * pInfo
+    );
+
+/*! »ñÈ¡ Bambook µÚÒ»±¾Êé¼®ĞÅÏ¢
+
+    µ÷ÓÃ¸Ãº¯Êıºó½«´ÓÍ·¿ªÊ¼´ÓÉè±¸²éÕÒÊé¼®ĞÅÏ¢£¬³É¹¦ºó¿ÉÒÔÔÙ´Îµ÷ÓÃ BambookFindNextBook
+    ²éÕÒÊ£ÏÂµÄÊé¼®ĞÅÏ¢£¬²éÕÒ½áÊøºóÓ¦µ÷ÓÃ BambookFindBookClose ¹Ø±Õ¾ä±ú¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param pCondition   ²éÑ¯Ìõ¼ş£¬Ä¿Ç°Ôİ²»Ö§³Ö£¬±ØĞë´«Èë¿ÕÖ¸Õë
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÊé¼®ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookInfo)
+    \param hFind        ¾ä±úÖ¸Õë£¬Èç¹û²éÕÒ³É¹¦·µ»Ø²éÕÒ¾ä±ú
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½Êé¼®·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookFindFirstBook (
+    __in BB_HANDLE hConn, 
+    __in_opt intptr_t pCondition,
+    __out BambookBookInfo * pInfo,
+    __out BB_HANDLE * hFind
+    );
+
+/*! »ñÈ¡ Bambook ÏÂÒ»±¾Êé¼®ĞÅÏ¢
+
+    ÔÚµ÷ÓÃ BambookFindFirstBook ³É¹¦ºóÔÙµ÷ÓÃ±¾º¯Êı£¬²éÕÒºó¼ÌµÄÊé¼®ĞÅÏ¢¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hFind    ²éÕÒ¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÊé¼®ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½Êé¼®·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookFindNextBook (
+    __in BB_HANDLE hFind, 
+    __out BambookBookInfo * pInfo
+    );
+
+/*! ¹Ø±Õ Bambook Êé¼®²éÕÒ¾ä±ú
+
+    ÔÚµ÷ÓÃ BambookFindFirstBook ºóµÃµ½µÄ¾ä±ú£¬ÔÚ²éÕÒÍê³ÉºóÓ¦µ÷ÓÃ¸Ãº¯ÊıÊÍ·Å¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hFind    ²éÕÒ¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookFindBookClose (
+    __in BB_HANDLE hFind
+    );
+
+/*! ¸ù¾İÊé¼® Id ²éÕÒ¶ÔÓ¦µÄÊé¼®ĞÅÏ¢
+
+    ¸Ãº¯Êı»á×Ô¶¯ÅĞ¶ÏÉè±¸¹Ì¼ş°æ±¾£¬µ±¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion < 20 
+    Ê±£¬»áÊ¹ÓÃ±éÀúµÄ·½Ê½À´²éÕÒ¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÊé¼®ĞÅÏ¢¡£¸Ã²ÎÊı¿ÉÒÔ´« NULL£¬´ËÊ±¿ÉÒÔ¸ù¾İ·µ»Ø
+                        ÖµÀ´ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ¡£\nÈç¹û²ÎÊı²»Îª NULL£¬Ôòµ÷ÓÃÇ°Ó¦ÉèÖÃ 
+                        pInfo->cbSize = SizeOf(BambookBookInfo)
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Êé¼®²»´æÔÚ·µ»Ø BR_INVALID_FILE£¬Ê§°Ü·µ»Ø BR_FAIL »ò´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetBookInfoById (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __out_opt BambookBookInfo * pInfo
+    );
+
+/*! È¡µÃÒ»±¾ Bambook Êé¼®µÄÕÂ½ÚÊı
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \param uCount       ·µ»ØÕÂ½ÚÊı
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetBookChapterCount (
+    __in BB_HANDLE hConn,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __out uint32_t * uCount
+    );
+
+/*! È¡µÃÒ»±¾ Bambook Êé¼®µÄÕÂ½ÚĞÅÏ¢
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \param uIndex       ÒªÈ¡µÃĞÅÏ¢µÄÕÂ½ÚË÷ÒıºÅ
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÕÂ½ÚĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookChapterInfo)
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetBookChapterInfo (
+    __in BB_HANDLE hConn,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __in uint32_t uIndex,
+    __out BambookChapterInfo * pInfo
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup BookmarkAPI Êé¼®ÔÄ¶ÁÊéÇ©Ïà¹Ø API
+//==============================================================================
+
+//! @{
+/*! È¡µÃÒ»±¾ Bambook Êé¼®µÄÔÄ¶ÁÊéÇ©ĞÅÏ¢
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º21
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÊé¼®ÔÄ¶ÁÊéÇ©ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookmarkInfo)
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö¸Ã¹¦ÄÜ·µ»Ø BR_FIRM_NOT_SUPPORT£¬ÆäËü
+                        ´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetBookmark (
+    __in BB_HANDLE hConn,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __out BambookBookmarkInfo * pInfo
+    );
+
+/*! ÉèÖÃÒ»±¾ Bambook Êé¼®µÄÔÄ¶ÁÊéÇ©ĞÅÏ¢
+
+    pInfo ²ÎÊı¼È×÷Îª´«ÈëµÄ²ÎÊıÓÃÀ´ÉèÖÃÊéÇ©ĞÅÏ¢£¬ÓÖÓÃÓÚ·µ»ØÉèÖÃÍê³ÉºóĞÂµÄÊéÇ©
+    ĞÅÏ¢£¬¿ÉÓÃÀ´¶ÔÉèÖÃ½á¹û½øĞĞÑéÖ¤¡£\n
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü¡£\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º21
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚÉèÖÃºÍ·µ»ØÊé¼®ÔÄ¶ÁÊéÇ©ĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(BambookBookmarkInfo)
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö¸Ã¹¦ÄÜ·µ»Ø BR_FIRM_NOT_SUPPORT£¬ÆäËü
+                        ´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSetBookmark (
+    __in BB_HANDLE hConn,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __inout BambookBookmarkInfo * pInfo
+    );
+
+/*! È¡µÃ×îºóÒ»´ÎÔÄ¶ÁµÄÊé¼®Ãû
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü¡£\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º21
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö¸Ã¹¦ÄÜ·µ»Ø BR_FIRM_NOT_SUPPORT£¬Èç¹û
+                        ×îºóÆäËüÔÄ¶ÁÊé¼®²»´æÔÚ·µ»Ø BR_INVALID_FILE£¬ÆäËü´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetLastReadBook (
+    __in BB_HANDLE hConn,
+    __out_ecount(20) char * lpszAppId,
+    __out_ecount(20) char * lpszBookId
+    );
+
+/*! È¡µÃµ±Ç°±»´ò¿ªµÄÊé¼®Ãû
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º21
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö¸Ã¹¦ÄÜ·µ»Ø BR_FIRM_NOT_SUPPORT£¬Èç¹û
+                        Éè±¸¸Õ¿ª»ú»¹Ã»ÓĞ´ò¿ªÊé¼®·µ»Ø BR_INVALID_FILE£¬ÆäËü´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetCurrentReadBook (
+    __in BB_HANDLE hConn,
+    __out_ecount(20) char * lpszAppId,
+    __out_ecount(20) char * lpszBookId
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup BookTransAPI Éè±¸Êı¾İ´«Êä API
+//==============================================================================
+
+//! @{
+/*! Ïò Bambook ´«Êä×ÔÓĞÊé£¬´«µ½BambookÒÔºóµÄÊé¼®IDÎªËæ»úÉú³ÉµÄ×Ö´®
+
+    µ÷ÓÃ¸Ãº¯ÊıºóÁ¢¼´·µ»Ø¡£\n
+    Èç¹ûµ÷ÓÃ³É¹¦£¬´«Êä¹ı³Ì»áµ÷ÓÃ»Øµ÷º¯ÊıÍ¨Öª×´Ì¬ºÍ½ø¶È¡£\n
+    Èç¹û²»Ê¹ÓÃ»Øµ÷£¬¿ÉÒÔ´«Èë NULL£¬ÕâÖÖ·½Ê½ÏÂ¿ÉÊ¹ÓÃ BambookGetSendPrivBookStatus
+    À´²éÑ¯µ±Ç°µÄ½ø¶ÈºÍÍê³ÉÇé¿ö¡£
+
+    \param hConn            Á¬½Ó¾ä±ú
+    \param pszSnbFile       ×ÔÓĞÊéÈ«Â·¾¶ÎÄ¼şÃû
+    \param pCallbackFunc    ´«Êä¹ı³ÌÖĞ»Øµ÷º¯Êı£¬»Øµ÷º¯Êı½«ÔÚµ¥¶ÀµÄÏß³ÌÖĞÖ´ĞĞ£¬¿ÉÎª¿Õ¡£
+    \param userData         ÔÚ»Øµ÷ÖĞ´«»Ø
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookAddPrivBook (
+    __in BB_HANDLE hConn,
+    __in const char * pszSnbFile,
+    __callback TransCallback pCallbackFunc,
+    __in_opt intptr_t userData
+    );
+
+/*! Ïò Bambook ´«Êä×ÔÓĞÊé£¬²¢·µ»Ø×Ô¶¯Éú³ÉµÄ BookId Ãû³Æ
+
+    µ÷ÓÃ¸Ãº¯ÊıºóÁ¢¼´·µ»Ø¡£Èç¹ûµ÷ÓÃ³É¹¦£¬´«Êä¹ı³Ì»áµ÷ÓÃ»Øµ÷º¯ÊıÍ¨Öª×´Ì¬ºÍ½ø¶È¡£
+    Èç¹û²»Ê¹ÓÃ»Øµ÷£¬¿ÉÒÔ´«Èë NULL£¬ÕâÖÖ·½Ê½ÏÂ¿ÉÊ¹ÓÃ BambookGetSendPrivBookStatus
+    À´²éÑ¯µ±Ç°µÄ½ø¶ÈºÍÍê³ÉÇé¿ö¡£
+
+    \param hConn            Á¬½Ó¾ä±ú
+    \param pszSnbFile       ×ÔÓĞÊéÈ«Â·¾¶ÎÄ¼şÃû
+    \param pCallbackFunc    ´«Êä¹ı³ÌÖĞ»Øµ÷º¯Êı£¬»Øµ÷º¯Êı½«ÔÚµ¥¶ÀµÄÏß³ÌÖĞÖ´ĞĞ£¬¿ÉÎª¿Õ¡£
+    \param userData         ÔÚ»Øµ÷ÖĞ´«»Ø
+    \param lpszBookId       ·µ»Ø×Ô¶¯Éú³ÉµÄ BookId£¬½ÓÊÕ»º³åÇø³¤¶ÈÓ¦ >= 20£¬¿ÉÎª NULL
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookAddPrivBookEx (
+    __in BB_HANDLE hConn,
+    __in const char * pszSnbFile,
+    __callback TransCallback pCallbackFunc,
+    __in_opt intptr_t userData,
+    __out_ecount_opt(20) char * lpszBookId
+    );
+
+/*! Ïò Bambook ´«Êä×ÔÓĞÊé£¬²¢Ö¸¶¨Êé¼®ID£¬Êé¼®ID³¤¶È´óÓÚ0²»µÃ³¬¹ıchar[20]£¬
+    IDÎªÓ¢ÎÄºÍ×ÖÄ¸£¬×îºóËÄÎ»Îª".snb"¡£±¾º¯Êı¿ÉÒÔÓÃÓÚÌæ»»BambookÄÚÌØ¶¨Êé¼®¡£
+
+    µ÷ÓÃ¸Ãº¯ÊıºóÁ¢¼´·µ»Ø¡£Èç¹ûµ÷ÓÃ³É¹¦£¬´«Êä¹ı³Ì»áµ÷ÓÃ»Øµ÷º¯ÊıÍ¨Öª×´Ì¬ºÍ½ø¶È¡£
+    Èç¹û²»Ê¹ÓÃ»Øµ÷£¬¿ÉÒÔ´«Èë NULL£¬ÕâÖÖ·½Ê½ÏÂ¿ÉÊ¹ÓÃ BambookGetSendPrivBookStatus
+    À´²éÑ¯µ±Ç°µÄ½ø¶ÈºÍÍê³ÉÇé¿ö¡£
+    µ±¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion >= 20 Ê±£¬Ìæ»»ºóµÄÊé¼®ÔÄ¶ÁÎ»ÖÃÊéÇ©½«±£Áô¡£
+
+    \param hConn            Á¬½Ó¾ä±ú
+    \param pszSnbFile       ×ÔÓĞÊéÈ«Â·¾¶ÎÄ¼şÃû
+    \param lpszBookId       Êé¼®ID
+    \param pCallbackFunc    ´«Êä¹ı³ÌÖĞ»Øµ÷º¯Êı£¬»Øµ÷º¯Êı½«ÔÚµ¥¶ÀµÄÏß³ÌÖĞÖ´ĞĞ£¬¿ÉÎª¿Õ¡£
+    \param userData         ÔÚ»Øµ÷ÖĞ´«»Ø
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookReplacePrivBook (
+    __in BB_HANDLE hConn,
+    __in const char * pszSnbFile, 
+    __in const char * lpszBookId,
+    __callback TransCallback pCallbackFunc, 
+    __in_opt intptr_t userData
+    );
+
+/*! ²éÑ¯µ±Ç°Ïò Bambook ´«Êä×ÔÓĞÊé²Ù×÷µÄ½ø¶ÈºÍ×´Ì¬
+
+    µ±Ê¹ÓÃ·Ç»Øµ÷·½Ê½Ïò Bambook ´«Êä×ÔÓĞÊéÊ±£¬¿ÉÍ¨¹ı¸Ãº¯Êı²éÑ¯´«Êä×´Ì¬¡£\n
+    Èç¹ûµ±Ç°Ã»ÓĞ´¦ÓÚ´«Êä×´Ì¬»òÕß´«ÊäÒÑÍê³É£¬status ½«·µ»Ø TRANS_STATUS_DONE\n
+    Èç¹û´«ÊäÊ§°Ü£¬status ·µ»Ø TRANS_STATUS_ERR£¬´«Êä¹ı³ÌÖĞ·µ»Ø TRANS_STATUS_TRANS
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param status   Ö¸Õë£¬·µ»Ø´«Êä×´Ì¬
+    \param progress Ö¸Õë£¬·µ»Ø´«Êä½ø¶È£¬0..100
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetSendPrivBookStatus (
+    __in BB_HANDLE hConn,
+    __out uint32_t * status,
+    __out uint32_t * progress
+    );
+
+/*! É¾³ı Bambook ×ÔÓĞÊé
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    µ±¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion  >= 20 Ê±£¬É¾³ı²»´æÔÚµÄÎÄ¼ş»á·µ»Ø 
+    BR_INVALID_FILE
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszBookId   ¶ÔÓ¦×ÔÓĞÊéĞÅÏ¢ÖĞµÄ bookGuid
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookDeletePrivBook (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszBookId
+    );
+
+/*! Ïò Bambook ÇëÇó×ÔÓĞÊéÎÄ¼ş
+
+    µ÷ÓÃ¸Ãº¯ÊıºóÁ¢¼´·µ»Ø¡£Èç¹ûµ÷ÓÃ³É¹¦£¬´«Êä¹ı³Ì»áµ÷ÓÃ»Øµ÷º¯ÊıÍ¨Öª×´Ì¬ºÍ½ø¶È¡£\n
+    Èç¹û²»Ê¹ÓÃ»Øµ÷£¬¿ÉÒÔ´«Èë NULL£¬ÕâÖÖ·½Ê½ÏÂ¿ÉÊ¹ÓÃ BambookGetFetchPrivBookStatus
+    À´²éÑ¯µ±Ç°µÄ½ø¶ÈºÍÍê³ÉÇé¿ö¡£
+
+    \param hConn            Á¬½Ó¾ä±ú
+    \param lpszBookId       ¶ÔÓ¦×ÔÓĞÊéĞÅÏ¢ÖĞµÄ bookGuid
+    \param lpszFilePath     ½ÓÊÕ×ÔÓĞÊéÎÄ¼ş´æ·ÅÄ¿Â¼
+    \param pCallbackFunc    ´«Êä¹ı³ÌÖĞ»Øµ÷º¯Êı£¬»Øµ÷º¯Êı½«ÔÚµ¥¶ÀµÄÏß³ÌÖĞÖ´ĞĞ£¬¿ÉÎª¿Õ¡£
+    \param userData         ÔÚ»Øµ÷ÖĞ´«»Ø
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookFetchPrivBook (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszBookId, 
+    __in const char * lpszFilePath,
+    __callback TransCallback pCallbackFunc, 
+    __in_opt intptr_t userData
+    );
+
+/*! ²éÑ¯µ±Ç°Ïò Bambook ÇëÇó×ÔÓĞÊé²Ù×÷µÄ½ø¶ÈºÍ×´Ì¬
+
+    µ±Ê¹ÓÃ·Ç»Øµ÷·½Ê½µ÷ÓÃ BambookFetchPrivBook Ê±£¬¿ÉÍ¨¹ı¸Ãº¯Êı²éÑ¯´«Êä×´Ì¬¡£\n
+    Èç¹ûµ±Ç°Ã»ÓĞ´¦ÓÚ´«Êä×´Ì¬»òÕß´«ÊäÒÑÍê³É£¬status ½«·µ»Ø TRANS_STATUS_DONE\n
+    Èç¹û´«ÊäÊ§°Ü£¬status ·µ»Ø TRANS_STATUS_ERR£¬´«Êä¹ı³ÌÖĞ·µ»Ø TRANS_STATUS_TRANS
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param status   Ö¸Õë£¬·µ»Ø´«Êä×´Ì¬
+    \param progress Ö¸Õë£¬·µ»Ø´«Êä½ø¶È£¬0..100
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookGetFetchPrivBookStatus (
+    __in BB_HANDLE hConn,
+    __out uint32_t * status,
+    __out uint32_t * progress
+    );
+
+/*! Ïò Bambook ÇëÇó×ÔÓĞÊé·âÃæÍ¼Æ¬ÎÄ¼ş
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü
+
+    \param hConn            Á¬½Ó¾ä±ú
+    \param lpszBookId       ¶ÔÓ¦×ÔÓĞÊéĞÅÏ¢ÖĞµÄ bookGuid
+    \param lpszFilePath     ½ÓÊÕ×ÔÓĞÊé·âÃæÍ¼Æ¬ÎÄ¼ş´æ·ÅÄ¿Â¼
+    \param lpszCoverName    ·µ»Ø·âÃæÍ¼Æ¬ÎÄ¼şÃû£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 100
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÊé¼®²»´æÔÚ»òÃ»ÓĞ·âÃæ·µ»Ø BR_INVALID_FILE£¬ÆäËü´í
+                            Îó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookFetchPrivBookCover (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszBookId, 
+    __in const char * lpszFilePath,
+    __out_ecount(100) char * lpszCoverName
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup CLBookAPI °æÈ¨Êé´¦ÀíÏà¹Ø API
+//==============================================================================
+
+//! @{
+/*! ¿ØÖÆ Bambook Ìí¼Ó»ò¸üĞÂÒ»±¾°æÈ¨Êé
+
+    ¸Ãº¯Êı¿ÉÒÔ¿ØÖÆ Bambook ¸üĞÂÒ»±¾°æÈ¨Êé¡£Èç¹û¸Ã°æÈ¨ÊéÒÑ¾­ÔÚÊé¼ÜÉÏÁË£¬ÔòÖ´
+    ĞĞÕÂ½Ú¸üĞÂ²Ù×÷¡£Èç¹û¸Ã°æÈ¨Êé²»ÔÚÓÃ»§Êé¼ÜÉÏ£¬Ôò×Ô¶¯½«¸ÃÊéÌí¼Óµ½ÓÃ»§Êé¼ÜÉÏ
+    ²¢ÔÚ Bambook ÉÏÖ´ĞĞÏÂÔØºÍ¸üĞÂ²Ù×÷¡£\n
+    ¸Ãº¯ÊıÖ»¸ºÔğÍ¨Öª Bambook ¸üĞÂÊé¼®£¬²»»áµÈ´ı¸üĞÂÍê³É£¬Ò²²»»á·µ»Ø¸üĞÂ½á¹û¡£
+    Bambook »áÒÔÈÎÎñ¶ÓÁĞµÄ·½Ê½Ö´ĞĞ¸üĞÂ²Ù×÷£¬ÔÚ¶ÓÁĞÖĞµÄÈÎÎñÖØÆôÉè±¸ºó½«¶ªÊ§¡£
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookUpdateBook (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszAppId,
+    __in const char * lpszBookId
+    );
+
+/*! ¿ØÖÆ Bambook ¸üĞÂÊé¼Ü
+
+    ¸Ãº¯Êı¿ÉÒÔ¿ØÖÆ Bambook ¸üĞÂÓÃ»§Êé¼Ü¡£Ïàµ±ÓÚÓÃ»§ÔÚÉè±¸ÉÏÖ´ĞĞ¡°È«²¿¸üĞÂ¡±
+    ¹¦ÄÜ¡£
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookUpdateBookShelf (
+    __in BB_HANDLE hConn
+    );
+
+/*! É¾³ı Bambook Êé¼®
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    µ±¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion >= 20 Ê±£¬É¾³ı²»´æÔÚµÄÎÄ¼ş»á·µ»Ø
+    BR_INVALID_FILE
+
+    \param hConn        Á¬½Ó¾ä±ú
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookDeleteBook (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszAppId,
+    __in const char * lpszBookId
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup CataAPI ·ÖÀà´¦ÀíÏà¹Ø API
+//==============================================================================
+
+//! @{
+/*! ´´½¨Êé¼Ü·ÖÀàĞÅÏ¢¾ä±ú
+
+    ´´½¨³É¹¦ºóµÄ¾ä±ú¿ÉÍ¨¹ı BambookCatalogLoad À´È¡µÃÉè±¸·ÖÀàĞÅÏ¢£¬
+    Ê¹ÓÃÍê³ÉºóÓ¦Í¨¹ı BambookCatalogFree ¹Ø±Õ
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogCreate (
+    __out BB_HANDLE * hCatalog
+    );
+
+/*! ¹Ø±ÕÊé¼Ü·ÖÀàĞÅÏ¢¾ä±ú
+
+    Í¨¹ı BambookCatalogCreate ´´½¨µÄ¾ä±úÔÚÊ¹ÓÃÍê³ÉºóÓ¦µ÷ÓÃ±¾º¯ÊıÊÍ·Å
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogFree (
+    __in BB_HANDLE hCatalog
+    );
+
+/*! ´Ó Bambook ÖĞ¶ÁÈ¡Êé¼Ü·ÖÀàĞÅÏ¢
+
+    Ö´ĞĞ³É¹¦ºóÈ¡µÃ·ÖÀàĞÅÏ¢£¬²Ù×÷Íê³Éºó¿ÉÊ¹ÓÃ BambookCatalogSave ½«·ÖÀàĞÅÏ¢
+    ±£´æµ½ Bambook¡£¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º19
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö·ÖÀà·µ»Ø BR_FIRM_NOT_SUPPORT£¬ÆäËü
+                    ´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogLoad (
+    __in BB_HANDLE hConn,
+    __in BB_HANDLE hCatalog
+    );
+
+/*! ½«Êé¼Ü·ÖÀàĞÅÏ¢±£´æµ½ Bambook ÖĞ
+
+    ¸Ãº¯Êı»á×èÈûÖ´ĞĞ£¬Ö±µ½²Ù×÷³É¹¦»òÊ§°Ü\n
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º19
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÉè±¸¹Ì¼ş²»Ö§³Ö·ÖÀà·µ»Ø BR_FIRM_NOT_SUPPORT£¬ÆäËü
+                    ´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogSave (
+    __in BB_HANDLE hConn,
+    __in BB_HANDLE hCatalog
+    );
+
+/*! È¡µÃ·ÖÀàĞÅÏ¢ÖĞ°üº¬µÄ·ÖÀà×ÜÊı
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uCount   ·µ»Ø·ÖÀà×ÜÊı
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogGetCount (
+    __in BB_HANDLE hCatalog,
+    __out uint32_t * uCount
+    );
+
+/*! È¡µÃ·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÃû³Æ
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex   ÒªÈ¡µÃµÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param lpszName ·µ»Ø·ÖÀàÃû³Æ£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 100
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                    ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogGetItem (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __out_ecount(100) char * lpszName
+    );
+
+/*! É¾³ı·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀà
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex   ÒªÉ¾³ıµÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                    ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogDeleteItem (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex
+    );
+
+/*! ĞŞ¸Ä·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÃû³Æ
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex   ÒªĞŞ¸ÄµÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param lpszName ĞÂµÄ·ÖÀàÃû³Æ
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                    ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogRenameItem (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in const char * lpszName
+    );
+
+/*! ÔÚ·ÖÀàĞÅÏ¢ÖĞÖ¸¶¨Î»ÖÃ²åÈëĞÂµÄ·ÖÀà
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex   Òª²åÈëµÄ·ÖÀàË÷ÒıÎ»ÖÃ£¬0 ±íÊ¾²åÈëÔÚ×îÇ°Ãæ£¬³¬¹ı×î´óÖµÊ±×·¼ÓÔÚÎ²²¿
+    \param lpszName ĞÂµÄ·ÖÀàÃû³Æ
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogInsertItem (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in const char * lpszName
+    );
+
+/*! ÔÚ·ÖÀàĞÅÏ¢Î²²¿Ôö¼ÓĞÂµÄ·ÖÀà
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param lpszName ĞÂµÄ·ÖÀàÃû³Æ
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬ÆäËü´íÎó·µ»Ø´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogAppendItem (
+    __in BB_HANDLE hCatalog,
+    __in const char * lpszName
+    );
+
+/*! ÒÆ¶¯·ÖÀàĞÅÏ¢ÖĞÖ¸¶¨·ÖÀàµ½ĞÂµÄÎ»ÖÃ
+
+    \param hCatalog     ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex       ÒªÒÆ¶¯µÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uNewIndex    ĞÂµÄË÷ÒıºÅÎ»ÖÃ£¬´Ó 0 ¿ªÊ¼
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogMoveItem (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in uint32_t uNewIndex
+    );
+
+/*! È¡µÃ·ÖÀàĞÅÏ¢ÖĞÖ¸¶¨·ÖÀà°üº¬µÄÊé¼®Êı
+
+    \param hCatalog ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex   ÒªÈ¡µÃµÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uCount   ·µ»Ø¸Ã·ÖÀàÏÂµÄÊé¼®×ÜÊı
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                    ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogGetBookCount (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __out uint32_t * uCount
+    );
+
+/*! È¡µÃ·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÏÂÖ¸¶¨Êé¼®µÄĞÅÏ¢
+
+    \param hCatalog     ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex       ÒªÈ¡µÃµÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uBookIndex   ÒªÈ¡µÃµÄÊé¼®Ë÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param lpszAppId    ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ AppId£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \param lpszBookId   ¶ÔÓ¦Êé¼®ĞÅÏ¢ÖĞµÄ bookGuid£¬µ÷ÓÃÊ±±ØĞë±£Ö¤·ÖÅäµÄ³¤¶È >= 20
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogGetBook (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in uint32_t uBookIndex,
+    __out_ecount(20) char * lpszAppId,
+    __out_ecount(20) char * lpszBookId
+    );
+
+/*! ´Ó·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÏÂÒÆ³ıÖ¸¶¨µÄÊé¼®
+
+    ¸Ãº¯ÊıÖ»ÊÇ½«Êé¼®ĞÅÏ¢´Ó·ÖÀàÖĞÒÆ³ı£¬²»»áÉ¾³ıÉè±¸ÉÏµÄÊé¼®
+
+    \param hCatalog     ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex       Òª²Ù×÷µÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uBookIndex   ÒªÒÆ³ıµÄÊé¼®Ë÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogRemoveBook (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in uint32_t uBookIndex
+    );
+
+/*! ÔÚ·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÏÂ°´Ö¸¶¨µÄÎ»ÖÃ²åÈëÊé¼®
+
+    \param hCatalog     ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex       Òª²Ù×÷µÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uBookIndex   Òª²åÈëµÄÊé¼®Ë÷ÒıºÅ£¬0 ±íÊ¾²åÈëÔÚ×îÇ°Ãæ£¬³¬¹ı×î´óÖµÊ±×·¼ÓÔÚÎ²²¿
+    \param lpszAppId    Òª²åÈëÊé¼®µÄ AppId
+    \param lpszBookId   Òª²åÈëÊé¼®µÄ BookID
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogInsertBook (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in uint32_t uBookIndex,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId
+    );
+
+/*! ÔÚ·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÏÂ×·¼ÓÊé¼®
+
+    \param hCatalog     ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex       Òª²Ù×÷µÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param lpszAppId    Òª²åÈëÊé¼®µÄ AppId
+    \param lpszBookId   Òª²åÈëÊé¼®µÄ BookID
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                        ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogAppendBook (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId
+    );
+
+/*! ÔÚ·ÖÀàĞÅÏ¢ÖĞµÄÖ¸¶¨·ÖÀàÒÆ¶¯Ö¸¶¨Êé¼®µ½ĞÂµÄÎ»ÖÃ
+
+    \param hCatalog         ·ÖÀàĞÅÏ¢¾ä±ú
+    \param uIndex           Òª²Ù×÷µÄ·ÖÀàË÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uBookIndex       ÒªÒÆ¶¯µÄÊé¼®Ë÷ÒıºÅ£¬´Ó 0 ¿ªÊ¼
+    \param uNewBookIndex    ĞÂµÄË÷ÒıºÅÎ»ÖÃ
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûË÷Òı³¬³ö·¶Î§·µ»Ø BR_OUT_OF_BOUNDS£¬ÆäËü´íÎó·µ»Ø´í
+                            ÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookCatalogMoveBook (
+    __in BB_HANDLE hCatalog,
+    __in uint32_t uIndex,
+    __in uint32_t uBookIndex,
+    __in uint32_t uNewBookIndex
+    );
+
+/*! ½«Ö¸¶¨Êé¼®Ìí¼Óµ½Ö¸¶¨·ÖÀàÖĞ
+
+    Èç¹û·ÖÀà²»´æÔÚ£¬Ôò×Ô¶¯×·¼ÓÒ»¸öĞÂµÄ·ÖÀà¡£
+    Èç¹ûÖ¸¶¨·ÖÀàÏÂ¸ÃÊé¼®ÒÑ¾­´æÔÚ£¬ÔòÖ±½Ó·µ»Ø³É¹¦¡£
+
+    \param hCatalog         ·ÖÀàĞÅÏ¢¾ä±ú
+    \param lpszAppId        ÒªÌí¼ÓÊé¼®µÄ AppId
+    \param lpszBookId       ÒªÌí¼ÓÊé¼®µÄ BookID
+    \param lpszCataName     ÒªÌí¼Óµ½µÄ·ÖÀàÃû
+    \return                 ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI
+BambookCatalogAddBookByName (
+    __in BB_HANDLE hCatalog,
+    __in const char * lpszAppId,
+    __in const char * lpszBookId,
+    __in const char * lpszCataName
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup MiscAPI Éè±¸ÆäËü¹¦ÄÜ API
+//==============================================================================
+
+//! @{
+/*! Ïò Bambook ·¢ËÍ°´¼üÃüÁî
+
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º12
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param key      °´¼üÖµ
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookKeyPress (
+    __in BB_HANDLE hConn, 
+    __in BambookKey key
+    );
+
+/*! ¿ØÖÆ Bambook µÄ TTS ÀÊ¶ÁÖ¸¶¨µÄÎÄ±¾
+
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º12
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \param lpszText ÒªÀÊ¶ÁµÄÎÄ±¾ÄÚÈİ£¬³¤¶È²»ÄÜ³¬¹ı40¸öÖĞÎÄ
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookTTSPlay (
+    __in BB_HANDLE hConn, 
+    __in const char * lpszText
+    );
+
+/*! ¿ØÖÆ Bambook Í£Ö¹ÓÉ BambookTTSPlay Æô¶¯µÄ TTS ÀÊ¶Á
+
+    ¸Ãº¯ÊıÒªÇó¹Ì¼şÖ§³ÖµÄÍ¨Ñ¶Ğ­Òé protocalVersion ×îµÍ°æ±¾Îª£º12
+
+    \param hConn    Á¬½Ó¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookTTSStop (
+    __in BB_HANDLE hConn
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup SNBWrapAPI SNB ÎÄ¼ş´¦Àí·â×° API
+//==============================================================================
+
+//! @{
+/*! °ÑÒ»¸ö·ûºÏ SNB Ä¿Â¼½á¹¹µÄÄ¿Â¼´ò³É SNB °ü
+
+    \param snbName  Éú³ÉµÄ snb ÎÄ¼şÃû
+    \param rootDir  Òª´ò°üµÄ¸ùÄ¿Â¼
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL¡¢BR_IO_ERROR »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookPackSnbFromDir (
+    __in const char * snbName, 
+    __in const char * rootDir
+    );
+
+/*! ¸ù¾İÏà¶ÔÂ·¾¶ÎÄ¼şÃû´Ó SNB °üÖĞ½â³öÒ»¸öÎÄ¼ş
+
+    \param snbName      Òª²Ù×÷µÄ snb ÎÄ¼şÃû
+    \param relativePath Òª½âÑ¹µÄÎÄ¼şÔÚ°üÖĞµÄÏà¶ÔÂ·¾¶ºÍÎÄ¼şÃû£¬±ÈÈç£º"snbf/book.snbf"
+    \param outputName   ½âÑ¹³öÀ´µÄÎÄ¼ş±£´æµÄÈ«Â·¾¶ÎÄ¼şÃû
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL¡¢BR_IO_ERROR¡¢BR_FILE_NOT_INSIDE »ò
+                        ´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookUnpackFileFromSnb (
+    __in const char * snbName, 
+    __in const char * relativePath, 
+    __in const char * outputName
+    );
+
+/*! ¼ì²éÒ»¸öÎÄ¼şÊÇ·ñºÏ·¨µÄ SNB ÎÄ¼ş
+
+    \param snbName  Òª²Ù×÷µÄ snb ÎÄ¼şÃû
+    \return         Èç¹ûÎÄ¼şºÏ·¨ BR_SUCC£¬·ñÔò·µ»Ø BR_INVALID_FILE »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookVerifySnbFile (
+    __in const char * snbName
+    );
+//! @}
+
+//==============================================================================
+//! \addtogroup SNBAPI SNB ÎÄ¼ş²Ù×÷ API
+//==============================================================================
+
+//! @{
+/*! ´ò¿ªÒ»¸ö SNB ÎÄ¼ş£¬·µ»Ø SNB ¶ÔÏó¾ä±ú
+
+    ²Ù×÷Íê³ÉºóÓ¦µ÷ÓÃ BambookSnbClose ¹Ø±Õ¶ÔÏó£¬ÊÍ·Å×ÊÔ´¡£
+    Í¬Ò»¸öÎÄ¼ş SNB ÎÄ¼ş£¬²»Ö§³ÖÍ¬Ê±±»¶à´Î´ò¿ª£¬¶àÏß³ÌÏÂ²Ù×÷Í¬Ò»¸ö SNB ¾ä±ú
+    ¿ÉÄÜ»áÓĞÎ´Öª´íÎó¡£
+
+    \param snbName  Òª´ò¿ªµÄ snb ÎÄ¼şÃû
+    \param hSnb     ¾ä±úÖ¸Õë£¬Ö´ĞĞ³É¹¦·µ»Ø SNB ¶ÔÏó¾ä±ú
+    \return         Èç¹û´ò¿ªÎÄ¼ş³É¹¦·µ»Ø BR_SUCC£¬·ñÔò·µ»Ø BR_INVALID_FILE »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbOpen (
+    __in const char * snbName,
+    __out BB_HANDLE * hSnb
+    );
+
+/*! ¹Ø±ÕÒ»¸ö SNB ¶ÔÏó¾ä±ú
+
+    \param hSnb     Òª¹Ø±ÕµÄ¶ÔÏó¾ä±ú
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL
+*/
+BB_RESULT
+BBAPI 
+BambookSnbClose (
+    __in BB_HANDLE hSnb
+    );
+
+/*! »ñÈ¡ SNB ÎÄ¼şÖĞÖ¸¶¨ÎÄ¼şµÄĞÅÏ¢
+
+    \param hSnb         Òª²Ù×÷µÄ¶ÔÏó¾ä±ú
+    \param relativePath Òª»ñÈ¡µÄÎÄ¼şÔÚ°üÖĞµÄÏà¶ÔÂ·¾¶ºÍÎÄ¼şÃû£¬±ÈÈç£º"snbf/book.snbf"
+    \param pInfo        ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÎÄ¼şĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(SnbFileInfo)
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½ÎÄ¼ş·µ»Ø BR_FILE_NOT_INSIDE£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbGetFileInfo (
+    __in BB_HANDLE hSnb,
+    __in const char * relativePath,
+    __out SnbFileInfo * pInfo
+    );
+
+/*! »ñÈ¡ SNB ÎÄ¼şÖĞµÚÒ»¸öÎÄ¼şĞÅÏ¢
+
+    \param hSnb     Òª²Ù×÷µÄ¶ÔÏó¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÎÄ¼şĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(SnbFileInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½ÎÄ¼ş·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbGetFirstFileInfo (
+    __in BB_HANDLE hSnb,
+    __out SnbFileInfo * pInfo
+    );
+
+/*! »ñÈ¡ SNB ÎÄ¼şÖĞÏÂÒ»¸öÎÄ¼şĞÅÏ¢
+
+    \param hSnb     Òª²Ù×÷µÄ¶ÔÏó¾ä±ú
+    \param pInfo    ĞÅÏ¢Ö¸Õë£¬ÓÃÓÚ·µ»ØÎÄ¼şĞÅÏ¢¡£µ÷ÓÃÇ°Ó¦ÉèÖÃ pInfo->cbSize = SizeOf(SnbFileInfo)
+    \return         ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½ÎÄ¼ş·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbGetNextFileInfo (
+    __in BB_HANDLE hSnb,
+    __out SnbFileInfo * pInfo
+    );
+
+/*! ´Ó SNB ÖĞ¶ÁÈ¡Ò»¸öÎÄ¼şÄÚÈİµ½Ö¸¶¨ÄÚ´æ»º³åÇø
+
+    \param hSnb         Òª²Ù×÷µÄ¶ÔÏó¾ä±ú
+    \param relativePath Òª½âÑ¹µÄÎÄ¼şÔÚ°üÖĞµÄÏà¶ÔÂ·¾¶ºÍÎÄ¼şÃû£¬±ÈÈç£º"snbf/book.snbf"
+    \param uOffset      Òª¶ÁÈ¡µÄÆğÊ¼Æ«ÒÆÁ¿
+    \param pBuffer      ÓÃÓÚ´æ·Å½âÑ¹ÄÚÈİµÄ»º³åÇøÖ¸Õë
+    \param uBufferSize  »º³åÇø´óĞ¡
+    \param uReadBytes   ·µ»ØÊµ¼Ê¶ÁÈ¡µÄ×Ö½ÚÊı£¬¸Ã×Ö½ÚÊıÎª»º³åÇø´óĞ¡Óë¿É¶ÁÈ¡×Ö½ÚÊıµÄĞ¡Öµ
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Èç¹ûÕÒ²»µ½ÎÄ¼ş·µ»Ø BR_FILE_NOT_INSIDE£¬uOffset ³¬³öÎÄ¼ş
+                        ·¶Î§·µ»Ø BR_EOF£¬ÆäËü´íÎó·µ»Ø´íÎó´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbUnpackToMemory (
+    __in BB_HANDLE hSnb,
+    __in const char * relativePath,
+    __in uint32_t uOffset,
+    __out void * pBuffer,
+    __in uint32_t uBufferSize,
+    __out uint32_t * uReadBytes
+    );
+
+/*! ´Ó SNB ÖĞ¶ÁÈ¡Ò»¸öÎÄ¼şÄÚÈİ²¢±£´æÎªÎÄ¼ş
+
+    \param hSnb         Òª²Ù×÷µÄ¶ÔÏó¾ä±ú
+    \param relativePath Òª½âÑ¹µÄÎÄ¼şÔÚ°üÖĞµÄÏà¶ÔÂ·¾¶ºÍÎÄ¼şÃû£¬±ÈÈç£º"snbf/book.snbf"
+    \param outputName   ½âÑ¹³öÀ´µÄÎÄ¼ş±£´æµÄÈ«Â·¾¶ÎÄ¼şÃû
+    \return             ³É¹¦·µ»Ø BR_SUCC£¬Ê§°Ü·µ»Ø BR_FAIL¡¢BR_FILE_NOT_INSIDE »ò´íÎóÔ­Òò´úÂë
+*/
+BB_RESULT
+BBAPI 
+BambookSnbUnpackToFile (
+    __in BB_HANDLE hSnb,
+    __in const char * relativePath,
+    __in const char * outputName
+    );
+//! @}
+//! @}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __BAMBOOKCORE_H__ */
