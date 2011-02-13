@@ -67,10 +67,18 @@ int BambookPluginAPI::getSdkVersion()
     }
 }
 
-int BambookPluginAPI::connect(std::string ip)
+bool BambookPluginAPI::connect(std::string ip, const FB::JSObjectPtr &callback)
+{
+    boost::thread t(boost::bind(&BambookPluginAPI::doConnect_thread,
+         this, ip, callback));
+    return true;
+}
+
+void BambookPluginAPI::doConnect_thread(std::string ip, const FB::JSObjectPtr &callback)
 {
     instance = this;
-    return BambookConnect(ip.c_str(), 1000 * 30, &handle);
+    int result = BambookConnect(ip.c_str(), 1000 * 30, &handle);
+    callback->InvokeAsync("", FB::variant_list_of(shared_ptr())(result));
 }
 
 int BambookPluginAPI::disconnect()

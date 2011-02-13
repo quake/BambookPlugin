@@ -24,7 +24,8 @@ public:
 
     int getSdkVersion();
     std::string getPluginVersion();
-    int connect(std::string ip);
+    bool connect(std::string ip, const FB::JSObjectPtr &callback);
+    void doConnect_thread(std::string ip, const FB::JSObjectPtr &callback);
     int disconnect();
     int getConnectStatus();
     FB::VariantList getPrivBookInfos();
