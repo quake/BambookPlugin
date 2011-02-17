@@ -39,6 +39,8 @@ BambookPluginAPI::BambookPluginAPI(boost::shared_ptr<BambookPlugin> plugin, FB::
 
     registerEvent("onprivbooktrans");
     registerEvent("onprivbooktransbyrawdata");
+
+    BambookSetCharacterEncoding("utf8");
 }
 
 BambookPluginAPI::~BambookPluginAPI()
