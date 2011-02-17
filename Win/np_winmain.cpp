@@ -6,7 +6,7 @@
   doing!
 \**********************************************************/
 
-#include "Win/win_common.h"
+#include "win_common.h"
 
 #include "NpapiTypes.h"
 #include "NpapiPluginModule.h"
@@ -43,3 +43,4 @@ NPError OSCALL NP_Shutdown()
     module = NULL;
     return NPERR_NO_ERROR;
 }
+
